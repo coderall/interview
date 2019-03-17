@@ -1,0 +1,13 @@
+// Redis
+
+
+
+// Memcached
+
+
+
+// Riak
+
+
+
+// HBase
