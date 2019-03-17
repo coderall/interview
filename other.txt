@@ -1,0 +1,38 @@
+---其他相关面试问题汇总---
+
+// 编译 运行
+
+1、程序使用 make -j n 编译后运行出错，不用 -j 参数 程序运行正常，尝试分析下可能的原因
+
+2、gcc 编译多线程程序时 -lpthread 和 -pthread 有什么不同？
+
+// shell & bash
+
+1、shell 脚本中以 #!/bin/bash 开头 和 #!/usr/bin/env bash 开头有什么不同？需要考虑什么情况？
+	（tips：主要是有的发行版可能不适用bash作为默认sh）
+
+2、shell中的 set -x有什么作用？
+	（tips：打印出每个命令的执行结果）
+
+3、shell中的 set -e有什么作用？
+	（tips：当程序执行遇到错误时，停止执行）
+	
+4、shell函数中的local有什么作用？
+
+5、怎样将stdou和stderr同时重定向到某文件？
+	(tips： &> )	
+	
+6、pip 的安装方式 curl https://boostrap.pypa.io/2.6/get-pip.py | python
+
+7、shell中怎样进行字符串前缀匹配？
+	(tips： [[ $STR == "test*" ]] )
+	
+8、shell 中字符串比较大小？
+	(tips：和上面一样，使用 [[ a > b ]] 来进行比较)
+
+
+// 其他
+
+1、MB 和 MiB 这两个单位有什么区别？
+
+

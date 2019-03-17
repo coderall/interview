@@ -1,0 +1,337 @@
+--- some popular network interview questions,mostly about TCP/IP ---
+--- TCP/IP 常见网络面试 笔试题 ---
+
+// IP
+
+1、路由器可以隔离广播域吗？ 交换机可以隔离广播域吗？
+	(tips：路由器可以，交换机不行)
+	
+2、什么是VLAN？
+
+// UDP
+
+1、UDP 可以使用connect吗？
+
+2、UDP recvfrom 100字节，这时来了个 150字节的数据包，会发生什么？ 如果来了一个 80字节的数据包呢？
+
+3、怎样明确知道对方收到了UDP数据包？
+
+4、怎样用UDP来模拟TCP？
+
+5、UDP怎么flush？
+
+6、UDP包头长度多少，分别都有哪些字段，有什么用？
+
+7、UDP最大发送长度是多少？需要分片吗？
+
+8、UDP需要用到路径MTU吗？
+
+9、UDP应用场景？现在有哪些知名软件在使用UDP？
+
+10、epoll 中可以添加UDP socket 吗？
+
+11、UDP socket 有缓冲区吗？如果有，怎么用？
+
+// TCP
+
+1、详细描述TCP三次握手过程，包括序列号，头部类型标识
+
+2、第一个SYN包的序列号从哪来？
+
+3、后面通信过程中的序列号怎么更新？是send一次 序列号+1 还是？
+
+4、TCP端口号最大数量多少？应用程序能使用的有多少？
+
+5、同一个客户端socket，是否可以同时连接多个服务端socket？
+
+6、客户端可以创建多少个socket？(同一个IP地址)
+
+7、epoll poll select 区别与联系？
+
+8、epoll 中 LT ET 区别，使用场景？
+
+9、EPOLL_ONESHOT 应用于哪种场景，作用是什么？
+
+10、accept 惊群问题描述？怎么解决？（内核中解决方案，应用层解决方案）
+
+11、time_wait 状态作用是什么？
+
+12、怎样避免出现 time_wait
+
+13、在不开启keep-alive机制的情况下，TCP连接建立后，在不发送数据的情况下，立即切断网线，双方会有感知吗？如果某一方发送数据，会有感知吗？
+
+14、同一个IP，同一个端口号，可以分别创建一个UDP socket，一个TCP socket吗？
+
+15、CLOSE_WAIT 状态出现在哪一端？
+
+16、SYN blood 攻击原理 及 危害？
+
+17、怎样防止 SYN blood？
+
+18、大概解释下 SYN cookies 原理？
+
+19、简单描述下 google 提出的 BBR 拥塞控制算法，所有内核版本都适用吗？
+
+20、所有 TCP UDP 接收的数据是否 都 需要 考虑字节序转换？
+
+21、TCP在哪些情况下会返回RST给对方？
+
+22、有文章指出，epoll中使用了共享内存来完成文件描述符事件从内核态到用户态的拷贝，是这样吗？
+
+23、处于ET模式的文件描述正在接收数据过程中，另一个文件描述符的数据到来，会有什么效果？之前的接收会中断吗？为什么？
+
+24、什么是RTT？什么是 SRTT？ 什么是 RTO？这三者有什么关系？
+
+25、什么是 TSO？ 对于数据的传输过程有什么影响？需要考虑哪些因素？
+
+26、什么是mss，受哪些因素影响？
+
+27、什么是 RPS？什么是 RFS？作用是什么？
+
+28、accept 调用返回时，三次握手是否结束？
+
+29、accept 的内部实现？
+
+30、有哪些内核参数会影响accept的行为？
+
+31、没有accept，客户端和服务器怎么建立一个新的TCP 连接？
+
+32、listen 函数参数的含义？
+
+33、四元组包括哪些数据，五元组包括哪些数据？
+
+34、TCP_NODELAY 标志有什么作用？
+	(tips：TCP_NODELAY用来关闭nagle算法)
+
+35、SO_REUSEADDR 标志有什么作用？
+
+36、SO_REUSEPORT 标志有什么作用？
+
+37、SO_REUSEADDR 和 SO_REUSEPORT有什么区别？使用中分别要注意什么？
+
+38、什么是通配地址？
+
+39、TCP都有哪些常用的拥塞控制算法？
+    （tips：Tahoe，Reno，Cubic，BBR）
+ 
+40、什么是慢启动？
+
+41、什么是快重传？
+
+42、什么是快恢复？
+
+43、Tahoe 和 Reno 算法中，判断出现丢包的依据是什么？
+	（tips：三次重复的ack）
+
+44、举例说明哪种场景下会出现重复的ack？
+
+45、TCP三次握手中，第一次SYN包的seqence是从0开始吗？为什么？选择算法是什么？
+
+46、TCP的sequence id是每发一次数据加1还是其他方法递增？
+
+47、内核是怎么解决 sequence id 回绕的？
+
+48、什么是DPDK，解决了什么问题？
+
+49、公网跨洋传输的带宽大概多少？
+
+50、什么是SACK，有什么作用？
+
+51、epoll有什么缺点？
+
+52、epoll的实现中使用了哪些数据结构？
+
+53、简单描述下BGP协议？基于IP实现还是TCP？
+
+54、什么是BGP带宽？
+
+55、AS是什么？
+
+56、UPD socket什么时候可以使用read，什么时候可以使用write？
+
+57、服务器端出现大量CLOSE_WAIT状态的socket的原因有哪些？
+	(tips：close_wait是在应答了第一次的FIN后的状态，不管哪一端出现大量的CLOSE_WAIT，都说明程序中的逻辑
+	没有尽快的close掉对端已经close的连接。如果出现在服务端，还有可能是accept的backlog过大，导致程序忙于
+	accept新连接，而没有及时处理close连接)
+
+58、LVS中负载均衡的实现都有哪些方式，有哪些优化方式？
+
+59、SO_REUSEPORT的内核实现？
+
+60、什么是TCP Incast？怎么解决？
+
+61、什么是 路由收敛？
+
+62、OSPF 和 BGP 的区别和联系是什么？
+
+63、什么是 ECMP 策略？
+
+64、使用DNS做全局负载均衡有什么缺点？
+
+65、服务端出现大量TIME_WAIT状态的socket的原因有哪些？
+
+66、大量TIME_WAIT socket对服务端有什么影响？
+
+67、tcp_tw_reuse 变量有什么作用？
+
+68、tcp_tw_recycle 变量有什么作用？
+
+69、ip_local_port_range 变量有什么作用？
+
+70、上述几个变量怎么解决 No.66 中TIME_WAIT 过多的问题？
+
+71、客户端直接向服务器发送 SYN/ACK 报文会受到什么回复？
+
+72、客户端的SYN报文中可以带数据吗？服务端收到后会怎么处理？
+
+73、socket() 函数有可能返回0吗？怎么实现？
+
+74、标准TCP适合于哪种类型的网络传输？
+	（tips：带宽时延低的网络和RTT很小的网络）
+
+75、CUBIC具体做了什么改动？
+	（tips：修改了拥塞避免的算法）
+
+76、passive FTP 和 active FTP 的区别是什么？
+
+77、FULLNAT 有什么作用？
+
+78、怎样计算RTT？
+
+79、什么是糊涂窗口综合症？
+   （tips：接收端慢速读取数据，发送端发送大量小数据包，网络利用率不高）
+
+80、零窗口通知的作用？
+
+81、零窗口通知是接收端发送还是发送端？
+
+82、什么时候停止零窗口？
+
+83、ACK报文中可以携带数据吗？
+
+84、延迟ACK有哪些好处？
+
+85、中间路由器随机丢包的意义？
+   （tips：生成重复的ack，帮助发送端确认网络状态）
+   
+86、TCP 中 MSS 表示什么？
+	(tips：MSS表示TCP层可以给IP层传输的最大数据量)
+	
+87、MSS的取值和什么有关？
+
+88、http标准中，怎么处理leading space？
+	(tips：忽略，或者说是去掉leading space)
+	
+89、TCP_DEFER_ACCEPT 标志有什么作用？
+
+90、sysctl -a | grep "tcp" | grep "re" 中各种重试次数与时间的设置都有哪些作用？
+
+91、CLOSE_WAIT状态有timeout吗？
+	(tips：没有，如果没有及时close，那么这个状态将一直保持)
+	
+92、LAST_ACK状态有timeout吗？
+	(tips：被动关闭一方在发送FIN后，状态转为LAST_ACK，这时的timeout等同于普通发送数据等待ack的逻辑
+	，如果超时没有收到ack，那么将重发FIN，直到收到对方响应，或超过最大重传次数，socket将会被关闭)
+	
+93、Nginx处理惊群问题的策略？
+	(tips：刚开始通过一个mutex在应用层处理惊群，但是在大量随机访问情况下发现惊群问题不是很严重，就
+	默认不开启这个锁，再到新版的内核通过REUSEPORT标志来彻底解决了惊群)
+	
+94、Nagle算法有什么作用？
+	(tips：Nagle算法是在收到对端的ack之前，积攒本地socket的数据到至少一个mss大小，这样能提高整体的传输吞吐量，
+	但不好的影响就是增加了访问延迟)
+	
+95、TCP_CORK 的作用是？
+	(tips：作用和TCP_NODELAY相反，告诉内核，应用层后面还有数据要传输，暂时不要开启本次的发送动作，直到buffer中的数据超过某个limit，
+	当TCP_NODELAY和TCP_CORK同时指定时，较早的内核中这两个参数的行为是互斥的，但是新版的内核更倾向于TCP_CORK)
+
+// http
+1、什么是CNAME？
+
+2、http PUT和POST有什么区别？
+
+3、http header中 content-type 域表示什么？
+
+4、简单描述下https加密原理？
+
+5、https加密header吗？
+
+6、https默认监听哪个端口？
+
+7、什么是Restful API？
+   （tips：用URI定位资源，用HTTP动词来描述操作）
+   
+8、客户端怎么验证服务端证书？
+
+9、什么是HTTP2？
+
+10、HTTP2都有哪些相关优化？
+	（多路复用，头部压缩，优先级）
+
+11、HTTP2 中优先级的概念是强制的吗？
+
+12、HTTP 中 PUT 和 POST 有什么区别？
+	(tips：PUT操作是幂等的，PUT操作的更新是全量更新，POST允许更新数据部分内容，两者都有创建语义)
+
+// 其他相关
+1、iptables实现原理，使用了哪些算法？
+
+2、普通的文件描述符 可以使用select 吗？有什么效果？
+  （答案：File descriptors associated with regular files always select true for ready to read, ready to write, and error conditions.）
+  
+3、普通的文件描述符可以添加进 epoll 中吗？
+
+4、路由查找使用什么数据结构？
+
+5、什么是NAPI？有什么作用？
+
+6、NAPI怎么解决可能的CPU占用过高问题？
+
+7、什么是netfilter？
+
+8、netfilter都有哪些hook点，对应于网络通信哪些过程？
+
+9、什么是LVS？有什么作用？
+
+10、netfilter都有哪些hook点？
+
+11、tcpdump工作原理？
+
+12、什么是bonding技术？常用的工作模式有哪些？
+
+13、网络设备中 什么叫 “MAN Core”？
+
+14、现在骨干网络带宽能达到什么量级？（最好能有各个公司的实现案例）简单描述下怎么实现？
+
+15、DNS dig 命令输出中TTL的单位是秒？毫秒？
+
+16、DNS dig 命令输出中TTL表示什么意思？
+   （tips：如果是权威域名服务器，TTL表示域名的刷新时长，如果不是，表示距离下次刷新还有多长时间）
+17、DNS view怎么理解？
+   （tips：相同域名区分请求ip/区域返回不同的目的IP）
+18、如何查看当前机器上的路由信息？
+   （tips：route -n 命令）
+
+19、SNAT 和 DNAT FULLNAT 分别有什么作用？
+
+20、上述几个NAT分别在netfilter哪个hook点工作？
+	(tips：SNAT在postrouting hook点工作)
+	
+21、什么L4交换机？
+
+22、TLS 协议能否保证数据一致性？
+   （tips：使用MAC算法，一种类hash算法，来保证数据一致性）
+   
+23、什么是公网下沉？有什么作用？
+
+24、怎样查看网卡带宽？
+
+25、bond有哪几种模式，怎么查看？
+
+26、网桥和交换机有什么区别？
+	(tips：冲突域不一样，且网桥记录的是 MAC-总线记录，交换机记录的是 MAC-端口记录)
+
+27、CSMA/CD 协议解决了什么问题？
+
+28、什么是 DNS 劫持？有什么解决办法？
+	(tips：解决办法有使用自己的DNS服务器，在程序中提前写好域名对应的ip)
