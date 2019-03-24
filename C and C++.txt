@@ -80,6 +80,19 @@
 29、realloc 函数在使用中有什么需要注意的？
 	(tips：realloc的返回值应该使用新的变量，因为如果分配失败，
 	原有的ptr不会释放，这有可能导致内存泄漏，还有realloc拷贝内存的方式为浅拷贝)
+	
+30、无符号数最大值加1，结果是什么？
+	(tips：无符号数最大值加1会回绕，即为0，有符号正数最大值加1，会成为负数)
+	
+31、typedef 定义的新类型和 const 搭配使用有什么问题？
+	(tips：有时搭配使用会产生不是预期的结果
+	typedef char * PCHAR
+	const PCHAR p，感觉 p 的类型是 const char *，
+	其实是 char * const p)
+	
+32、size_t 类型在不同平台上长度
+	(tips：表示当前平台能够寻址到的最大长度，即32位平台为 unsigned int
+	64位平台为 unsigned long)
 
 
 
