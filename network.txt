@@ -246,6 +246,10 @@
 95、TCP_CORK 的作用是？
 	(tips：作用和TCP_NODELAY相反，告诉内核，应用层后面还有数据要传输，暂时不要开启本次的发送动作，直到buffer中的数据超过某个limit，
 	当TCP_NODELAY和TCP_CORK同时指定时，较早的内核中这两个参数的行为是互斥的，但是新版的内核更倾向于TCP_CORK)
+	
+96、perf -g -a -e skb:kfree_skb 然后 调用 perf script 可以看到具体看到丢包的代码路径
+
+97、tcp_tw_timeout 这个参数用来调整处于time-wait状态的socket的等待时间，但是linux中这个变量并没有暴露出来。Ali内核中这个参数可以调整
 
 // http
 1、什么是CNAME？
