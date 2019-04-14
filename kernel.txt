@@ -548,7 +548,7 @@
 56、readahead 对 dir的影响？
 
 57、ext3 和 ext4 允许的子目录数分别在什么量级？
-	(tips：ext3在10k级别，ext4在100k级别)
+	(tips：查看 112 的解释)
 
 58、ext4 multi-block allocation、extents和delayed allocation分表表示什么？有什么作用？
 
@@ -773,10 +773,37 @@
 	
 130、接上一条，有的SSD本身具有中断聚合功能，即尽可能少的中断CPU执行，批量提交I/O完成信息
 
-131、ramfs 和 temfs 有什么区别和联系？
+131、ramfs 和 tempfs 有什么区别和联系？
 	(tips：首先，这两个文件系统使用的都是内存，free命令中 cache 部分
 	不同的是，tmpfs可以限制使用的总大小，且可以通过df 命令查看现在的使用量
 	挂载命令 mount -t tmpfs -osize=100M tmpfs /your/mount/point)
+	
+132、fuse 中实现的non-privileged mount 概念？
+
+133、当挂载多个fuse实例时，怎样区分发送的消息给不同的user process？
+	(tips：各个挂载点的super block不一样，而super block中实现了不同的request queue)
+	
+134、用户态close一个文件，为什么需要调用 fuse flush和release接口？
+	(tips： TODO)
+	
+135、vmtouch的实现原理？
+	(tips：核心实现调用了mincore函数，在调用这个函数之前需要调用mmap将文件映射到内存中，
+	然后判断文件的内容是否在内存中)
+	
+136、写入文件时，提示磁盘满，排查步骤
+	(tips：1、df -Th 检查磁盘空间是否满，2、df -i 检查inode空间是否满
+	3、查看目录是否有 dir_index特性，且当前目录下存在千万级文件，4、确认当前文件系统没有在恢复中)
+	
+137、Ext4 中 HTree 数据结构中 怎么处理 hash值相同的情况？
+	(tips：并没有进行特殊的处理，还是按照二分查找法处理)
+	
+138、Ext4 中单目录下 子目录最多 65000个，对应 112 问题中的 Ext3的实现
+
+139、indoe结构中的 i_nlink 字段的含义是？
+	(tips：参照 112 和 138 问题的子目录数量)
+	
+140、Ext4 实现的 HTree 目录结构中，树高固定为 2，在 4.12 版内核之后，可以通过开启 largedir 特性来将树高 调到3
+	(tips：如果树高为2，那么单个目录下的最大文件数在 千万 级别，还和 文件名大小有关)
 
 
 // 其他
