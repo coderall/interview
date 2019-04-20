@@ -35,6 +35,8 @@
 14、内核中使用较多的锁都有哪些？作用都有哪些？
 
 15、简单解释下RCU？
+	(tips：和读写锁相同，多个读者之间可以并行访问，但有读者时，写者不用阻塞等待，可以新申请空间，
+	更新后再将原指针替换，具体做法依赖于优雅周期的判断，多个写者之间的同步？ TODO)
 
 16、解释下uptime命令的输出？具体的计算依据是什么？（CPU run queue中 runnable进程和处于D状态的进程数量）
 	(tips：计算方式类似于统计时间段内平均值)
@@ -439,6 +441,17 @@
 81、CFS调度器中，怎样计算vruntime？
 	(tips：使用 实际执行时间 * nice_0_weight / weight，进程的nice值越高，weight越低，vruntime越大，
 	被调度的可能越小)
+	
+82、RCU常用接口有？
+	(tips： rcu_read_lock 读者加读锁，rcu_read_unlock 读者解锁
+	rcu_dereference 读者拿到被保护的指针， rcu_assign_pointer 写者替换原来的指针
+	rcu_sync 将替换行为同步给其他访问者)
+	
+83、传统RCU有什么问题？
+	(tips：在大型系统中，随着核数的增多，在优雅周期的判断时，对于CPU mask 的争用加剧，导致RCU操作效率降低)
+	
+84、Tree RCU 又是怎么解决这个问题的？
+	(tips：将CPU mask组织成树形结构，将CPU划分成组，不同的组访问不同的rcu_node，减少锁争用)
 	
 
 // 文件系统
