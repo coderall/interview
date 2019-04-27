@@ -453,6 +453,13 @@
 84、Tree RCU 又是怎么解决这个问题的？
 	(tips：将CPU mask组织成树形结构，将CPU划分成组，不同的组访问不同的rcu_node，减少锁争用)
 	
+85、TASK_KILLABLE 状态的作用是？
+	(tips：TASK_INTERUPTABLE 状态的进程可以响应信号，TASK_UNINTERRUPTABLE状态的进程又完全不响应信号，
+	而TASK_KILLABLE是在这两者之间，首先，处于TASK_KILLABLE状态的进程也是可以响应信号的，
+	当收到致命信号时，会唤醒对应进程。
+	ps 命令输出中 D 状态的进程不一定就是 TASK_UNINTERRUPTABLE 的，也有可能是 TASK_KILLABLE 的，
+	这个新的状态在 内核版本 2.6.26 之后添加)
+	
 
 // 文件系统
 
