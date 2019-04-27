@@ -7,6 +7,10 @@
 	(tips：路由器可以，交换机不行)
 	
 2、什么是VLAN？
+	(tips：虚拟局域网)
+	
+3、什么是VxLAN？
+	(tips：扩展版的VLAN，具体作用后面再补充)
 
 // UDP
 
@@ -175,8 +179,13 @@
 66、大量TIME_WAIT socket对服务端有什么影响？
 
 67、tcp_tw_reuse 变量有什么作用？
+	(tips：首先这个参数只在客户端会起作用，因为他主要是快速回收socket，用于创建出链接，
+	因为服务器端一般不会创建出链接，所以这个参数在服务端作用不大)
 
 68、tcp_tw_recycle 变量有什么作用？
+	(tips：socket处于 time-wait状态后，之前源端的数据包如果timestamp小于当前记录的数值，会被丢弃，
+	这个参数在使用NAT的环境中会有问题，因为NAT转发过程中，尤其是 SNAT，出口数据包源ip都是相同，
+	这就会有问题，一个连接关闭，影响了其他相同出口的连接)
 
 69、ip_local_port_range 变量有什么作用？
 
@@ -322,6 +331,8 @@
    （tips：route -n 命令）
 
 19、SNAT 和 DNAT FULLNAT 分别有什么作用？
+	(tips：SNAT 对IP包中的源地址根据规则进行转换，DNAT则对目的地址进行转换
+	FULLNAT 则是 同时对源地址和目的地址进行转换，传统的服务部署中就是利用FULLNAT来完成用户请求处理)
 
 20、上述几个NAT分别在netfilter哪个hook点工作？
 	(tips：SNAT在postrouting hook点工作)
