@@ -93,6 +93,9 @@
 32、size_t 类型在不同平台上长度
 	(tips：表示当前平台能够寻址到的最大长度，即32位平台为 unsigned int
 	64位平台为 unsigned long)
+	
+33、在使用stringstream 将整数转为字符串时，需要注意本地环境中的locale属性，
+	有时会将整数转成逗号 分隔 的数字表示形式
 
 
 
