@@ -459,7 +459,11 @@
 	当收到致命信号时，会唤醒对应进程。
 	ps 命令输出中 D 状态的进程不一定就是 TASK_UNINTERRUPTABLE 的，也有可能是 TASK_KILLABLE 的，
 	这个新的状态在 内核版本 2.6.26 之后添加)
-	
+
+86、flock和lockf调用的区别是？
+	(tips：lockf是fcntl锁定操作的封装，是POSIX文件锁的实现，而flock则用了一个新的系统调用，
+	lockf可以针对文件的range进行加锁，而flock不行，但是两者都是实现了基本的意向锁，但是，
+	fcntl也有强制锁的实现)
 
 // 文件系统
 
