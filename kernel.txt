@@ -464,7 +464,52 @@
 	(tips：lockf是fcntl锁定操作的封装，是POSIX文件锁的实现，而flock则用了一个新的系统调用，
 	lockf可以针对文件的range进行加锁，而flock不行，但是两者都是实现了基本的意向锁，但是，
 	fcntl也有强制锁的实现)
+	
+87、schedule函数中选择下一个调度进程的方法是？
+	(tips：Linux内核实现了四个调度类，stop停止类，rt实时类，fair公平类，idle空闲类，
+	优先级从高到低，先在stop类中选择进程，如果没有则在rt类，接下来是fair类，再接下来是idle类，
+	同时，实时类也对应之前O1调度算法中0~99 这个优先级区间的任务，fair对应的是100~139区间的优先级)
 
+88、stop停止类只有一个任务，用于多CPU之间负载均衡相关或CPU热插拔，
+	idle类也只有一个任务，用于CPU睡眠
+	
+89、新创建的进程的vruntime取值刚开始和父进程的vruntime一样，但要减去运行队列中的最小vruntime，
+	之所以这样做，是因为要考虑多CPU之间的负载均衡，各个CPU上的运行队列的最小vruntime不一样，
+	如果不这样做，直接迁移可能会造成负载不均衡。当确定好运行CPU后，再加上对应CPU运行队列的最小vruntime
+	
+90、唤醒后的进程的vruntime更新是在之前vruntime的基础上，用运行队列最小vruntime减去一个调度周期表示为vruntime1，
+	然后取 max(当前进程vruntime，vruntime1)，这样就解决了长时间睡眠的进程醒来时由于vruntime太小而导致长期占用CPU
+	
+91、之前System V 风格的signal机制有一个问题，就是在信号处理函数不是默认值且设置了SA_ONESHOT标志后，
+	内核会在自动在自定义信号处理函数执行后，恢复到默认信号处理函数。
+	
+92、信号值在 1~31 范围内的都是不可靠信号，即实现中是以位图来标志是否有挂起的信号，
+	而又相同的信号时，会导致信号丢失。
+	
+93、信号中断系统调用表示？
+	(tips：内核在执行慢速系统调用时有可能被信号打断而无法继续执行，这时接口会返回EINTR错误，
+	为了可以让系统调用继续执行，可以在设置信号处理的行为为 SA_RESTART，但不是所有的系统调用都能自动继续执行，
+	具体可以 man 7 signal 查看)
+	
+94、可靠信号的队列长度有限制吗？
+	(tips：有，可以通过 ulimit -a 查看 signal pending 的取值)
+	
+95、信号与多线程的关系？
+	(tips：
+	1 信号处理函数在多线程之间共享，但是各个线程可以有自己的信号屏蔽集
+	2 kill 函数必须面向进程
+	3 每个发给多线程应用的信号，由内核随机挑一个未屏蔽该信号的线程来接收
+	4 如果向多线程程序发送致命信号，那么内核将停止进程下的所有线程)
+	
+96、多个信号的投递优先级？
+	(tips：优先处理私有信号队列，然后处理共享队列，
+	优先处理SIGSEGV，SIGBUS，SIGILL，SIGTRAP，SIGFPE，SIGSYS同步信号，
+	然后处理信号值小的信号，不可靠信号优先级高于可靠信号)
+	
+97、异步信号安全也要值得考虑，具体做法就是化异步为同步
+	可以采用sigwait方法，也可以将signalfd返回的fd加入epoll中来处理，
+	还可以通过管道的方式来处理，还可以通过socketpair来通知主进程有信号发生
+	
 // 文件系统
 
 1、inode号可以重复吗？
@@ -575,7 +620,7 @@
 52、task_struct 结构中 prio,static_prio,normal_prio,rt_prio 字段分别表示什么意思？
 	（tips：prio表示的是真实的优先级，static_prio和nice的操作关系密切，normal_prio表示的静态优先级的概念，fork时，子进程的static_prio=父进程的normal_prio
 	  nice操作通过修改static_prio来影响优先级，进而计算进程对应的weight值，weight值呢又影响了CFS调度中vruntime增加的速度，联想对应PDF中不同nice值的进程
-	  的vruntime增长速度图）
+	  的vruntime增长速度）
 
 53、nice的操作是怎样影响CFS调度器行为的？
 
