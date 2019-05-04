@@ -36,6 +36,10 @@
 
 11、UDP socket 有缓冲区吗？如果有，怎么用？
 
+12、UDP发送时，是一次send 一个数据包吗？
+	(tips：大部分场景下是这样的，但是UDP也支持CORK和MSG_MORE选项，这时，UDP和TCP一样，
+	send多次对应一个数据包)
+
 // TCP
 
 1、详细描述TCP三次握手过程，包括序列号，头部类型标识
@@ -259,6 +263,24 @@
 96、perf -g -a -e skb:kfree_skb 然后 调用 perf script 可以看到具体看到丢包的代码路径
 
 97、tcp_tw_timeout 这个参数用来调整处于time-wait状态的socket的等待时间，但是linux中这个变量并没有暴露出来。Ali内核中这个参数可以调整
+
+98、bind 函数可以绑定非本地ip吗？
+	(tips：可以，系统中有一个配置项来设置是否开始这个行为的支持
+	net.ipv4.ip_nonlocal_bind = 1
+	在运行负载均衡软件的系统中，为了保证系统的容灾特性，所以绑定一个未分配到网卡的地址，
+	这样，当网卡出现异常时，系统让然可以正常工作)
+	
+99、数据包的发送过程，首先是TCP/UDP层的发送接口，然后调用IP层接口，然后调用Route层接口，
+	然后调用调用设备层接口将数据包放入TC队列(流控队列)，然后根据队列算法，让核实的数据包出队，
+	并调用网卡的发送函数，将数据包发送到网卡，如果网卡满足发送条件，则数据包会被真正的发送出去。
+	
+100、TCP的三个接受队列各有什么作用？
+	(tips：sk_receieve_queue是真正的接收队列，
+	prequeue则是在该socket没有正在被用户进程使用时，由软中断直接将数据包保存在prequeue中，并返回；
+	sk_backlog是socket正处于用户进程上下文时，在软中断的处理过程中，内核会将数据包保存在sk_backlog中)
+	
+101、Raw Socket是否能收到TCP/UDP报文？
+	(tips：Linux上的实现Raw Socket可以收到TCP/UDP报文)
 
 // http
 1、什么是CNAME？
