@@ -1,0 +1,7 @@
+this doc record some useful tools to trace problem or optimize performance
+
+#No.1 dropwatch
+用来查看机器丢包信息，辅助定位网络问题
+
+#No.2 qperf
+测试机器间TCP/UDP网络性能
