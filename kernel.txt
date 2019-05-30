@@ -239,6 +239,9 @@
 85、OOM时发送的信号是什么？
     (tips：发送SIGKILL信号)
 
+86、添加cgroup规则后，超过内存使用限制会OOM吗？
+    (tips：cgroup中OOM是默认开启的)
+
 86、SIGKILL 和 SIGSTOP 两个信号不能被忽略，也不能由应用使用自定义信号处理函数捕获
 
 // 内存管理
