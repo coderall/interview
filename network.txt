@@ -281,6 +281,27 @@
 	
 101、Raw Socket是否能收到TCP/UDP报文？
 	(tips：Linux上的实现Raw Socket可以收到TCP/UDP报文)
+	
+102、net.ipv4.tcp_sack 系统变量有什么作用？
+	(tips：TCP选择ACK，较早的实现中，TCP接收方只会应答给发送方已接收到的数据，
+	如果有丢包发生，虽然收到了一部分数据，但可能仍然需要从丢包点重传全部数据，
+	TCP 的 SACK 机制就是接收方会告诉发送方哪些数据收到了，哪些需要重传。
+	有研究任务，在高速网络传输过程中，计算SACK的开销要高于重传数据。)
+
+103、net.core.netdev_max_backlog 系统变量有什么作用？
+	(tips：网卡收到包之后会放到各个CPU的backlog队列，如果队列满，那么会丢弃数据包)
+
+104、net.ipv4.tcp_timestamps 系统变量有什么作用？
+	(tips：TCP时间戳)
+
+105、net.ipv4.tcp_window_scaling 系统变量有什么作用？
+	(tips：之前TCP头部使用8-bits表示窗口大小，这在当下的高速网络传输中已不适用，
+	现在在TCP options 字段中添加了扩展字段，通过位移操作来确定窗口大小，
+	在三次握手过程中大家会协商使用TCP window scaling，如果双方中哪一方不支持，
+	那么使用原来的窗口值)
+	
+106、net.core.somaxconn 系统变量有什么作用？
+	(tips：listen backlog队列最大数量)
 
 // http
 1、什么是CNAME？
