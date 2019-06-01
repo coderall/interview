@@ -212,6 +212,38 @@
 	2 mutex的锁内核只是做了加锁或睡眠等待，futex明确告诉内核调用者的一个期望
 	3 两者都有实现唤醒和睡眠)
 
+80、进程收到SIGKILL后，会有dump文件吗？
+    (tips：SIGKILL信号系统的默认行为为终止对应进程，没有dump文件产生，
+     但是，当收到SIGTERM信号时，有dump文件产生)
+
+81、OOM时的进程选择机制是什么？
+    (tips：根据/proc/${pid}/oom_score来选择一个值最大的进程，一般来说，
+     内存占用量高的进程这个值较大，但是如果是 root 用户的进程，会减去30分，
+     因为内核认为root用户的进程重要性更高，如果有CAP_SYS_ADMIN权限，
+     则会减去 score的 3%)
+
+82、barrier的作用是什么？
+    (tips：乱序访问分为 编译时乱序和执行时乱序，编译时乱序通常由高级别的优化引入，例如 -O2，
+     编译乱序可以通过内嵌汇编的方式解决；
+     执行时乱序则需要通过CPU相关的fence指令来避免；
+     单CPU执行时，不存在执行时乱序，但是有可能有编译时乱序，
+     这里可以参考内核里面相关mb()函数的定义)
+
+83、/proc/${pid}/oom_adj 作用是什么？
+    (tips：计算oom_score的一个参考数值)
+
+84、/proc/${pid}/oom_score_adj 作用是什么，和上面的变量的区别是？
+    (tips：oom_score_adj是一个新的参数数值，oom_adj的取值范围为 -17~+15,
+     oom_score_adj的取值范围为 -1000~+1000，且系统建议使用新的oom_score_adj)
+
+85、OOM时发送的信号是什么？
+    (tips：发送SIGKILL信号)
+
+86、添加cgroup规则后，超过内存使用限制会OOM吗？
+    (tips：cgroup中OOM是默认开启的)
+
+86、SIGKILL 和 SIGSTOP 两个信号不能被忽略，也不能由应用使用自定义信号处理函数捕获
+
 // 内存管理
 
 1、malloc的实现
@@ -267,8 +299,12 @@
 24、什么是swap，有什么作用？
 
 25、什么是内存overcommit？
+    (tips：操作系统向外提供的内存总量比 RAM+Swap 多，这里有一个假设就是，
+     应用申请的一些内存并没有使用，或使用了很快释放，当触发缺页中断时，
+     还是要申请物理内存，并且要考虑OOM机制的影响)
 
 26、系统可配置的处理overcommit策略都有哪些？
+    (tips：vm.overcommit_memory和vm.overcommit_ratio proc变量的取值)
 
 27、怎样判断进程有overcommit行为？
 

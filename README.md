@@ -1,2 +1,2 @@
 # interview
-a interview questions collections
+a interview questions collection, including kernel, distributed system, C/C++ etc.
