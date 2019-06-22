@@ -244,6 +244,9 @@
 
 86、SIGKILL 和 SIGSTOP 两个信号不能被忽略，也不能由应用使用自定义信号处理函数捕获
 
+87、MSI 和 MSI-X 表示什么？
+    (tips：一种新的中断通知方式，主要用于网卡中断)
+
 // 内存管理
 
 1、malloc的实现
@@ -326,7 +329,10 @@
 35、swapoff 和 swapon 命名有什么作用？
 
 36、/proc/sys/vm/drop_caches 传入 1 2 3 分别代表什么？
-	(tips：1 表示只回收pageCache，2表示回收dentries和inode，3表示上述两个都回收)
+	(tips：1 表示只回收pageCache，
+     2表示通过回收dentries和inode占用的slab空间，
+     3表示上述两个都回收，
+     回收的方法是写回dirty数据，然后free占用的内存空间)
 
 37、缓存一致性协议有哪几种实现方式？
 	(tips：基于目录的MESI实现和基于总线通讯的实现)
@@ -568,7 +574,8 @@
 	
 104、free命令显示可用内存小，程序crash原因及解决方案？
 
-
+105、操作系统中inode有cache吗？ dentry呢?
+    (tips：都有对应的hash cache)
 
 
 // 其他

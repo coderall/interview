@@ -148,8 +148,12 @@
 50、什么是SACK，有什么作用？
 
 51、epoll有什么缺点？
+    (tips：1、epoll的跨平台性不好
+     2、epoll对多进程/多线程支持不够
+     3、活动链接多时，需要频繁的申请内存保存活跃socket信息)
 
 52、epoll的实现中使用了哪些数据结构？
+    (tips：红黑树)
 
 53、简单描述下BGP协议？基于IP实现还是TCP？
 
@@ -301,7 +305,29 @@
 	那么使用原来的窗口值)
 	
 106、net.core.somaxconn 系统变量有什么作用？
-	(tips：listen backlog队列最大数量)
+	(tips：listen backlog队列最大数量,这个队列是指已经完成三次握手，
+     但是还没有调用accept的请求)
+
+107、net.ipv4.tcp_max_syn_backlog 系统变量有什么作用？
+    (tips：这个变量控制着处于半连接状态的TCP连接数量，
+     服务器收到客户端的SYN请求后，会将这个连接加入半连接队列，
+     这个队列的长度就受题目中的这个系统变量控制)
+
+108、ss 命令看到 处于 listen 状态的 socket 的 Recv-Q 和 Send-Q表示什么意思？
+    (tips：listen状态的Recv-Q表示当前accept队列中等待accept的连接数量，
+     最大数量受 题目106中所述变量控制，Send-Q表示当前socket的accept backlog取值，
+     为 max(listen_backlog, /proc/net/core/somaxconn),
+     当命令输出中这两个参数相等时，表示当前accept队列满，考虑调大somaxconn数值)
+
+109、当半连接队列满时，新来的连接的处理方式为？
+    (tips：丢弃新来的连接请求，客户端的connect会超时)
+
+110、当accept队列满时，新完成握手的连接处理方式为？
+    (tips：根据 /proc/sys/net/ipv4/tcp_abort_on_overflow 来决定如何返回，
+     如果取值为 0，则忽略客户端发送的第三次ack，即认为连接还没有建立，
+     过一段时间后再次发送SYN+ACK给客户端；如果 取值为1，表示直接返回给客户端RST)
+
+111、在连接建立过程中，两个队列，半连接队列(syn queue) 和 全连接队列(accept queue)很重要
 
 // http
 1、什么是CNAME？
