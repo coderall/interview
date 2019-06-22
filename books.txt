@@ -1,0 +1,11 @@
+// books to read
+
+1、《Types and Programming Languages》 Author Benjamin C. Pierce
+
+2、《Automata Theory, Languages, and Computation》 Author John E, Hopcroft
+
+3、《Compliler Design & Implementation》 Author Steven S. Muchnick
+
+4、《The Garbage Collection Handbook》 Author Richard Jones
+
+5、《Virtual Machines》 Author James E. Smith
