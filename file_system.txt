@@ -441,3 +441,15 @@
      但是如果是小块写，考虑到数据安全性，不够一个大块的数据需要填充，然后仍然计算校验和、刷盘，
      后面有数据到来时，考虑到 146 中提到的流量放大问题，写入效率低。
      FusionStorage为了解决这个问题，做了一层缓存，对外是直写EC，但是由缓存将小块写转为大块写)
+
+154、fio 工具中的 iodepth参数表示什么？
+    (tips：iodepth在同步IO中不起作用，在使用异步引擎时，表示针对一个同时发起的IO数量)
+
+155、iostat 命令中 avgrq-sz 和 avgqu-sz表示什么意思？
+    (tips：avgrq-sz 表示平均 request大小，单位为 sector
+     avgqu-sz表示发送给设备的requests队列长度)
+
+156、EAGAIN 和 EWOULDBLOCK 两个错误码有什么区别？
+    (tips：在Linux上，这两个错误码的定义数值是相同的，
+     通过查看 man 2 read 和 man 2 write，不会返回 EWOULDBLOCK
+     返回EAGAIN表示在 Non-Blocking I/O 中，资源暂时不可用)
