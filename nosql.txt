@@ -1,3 +1,6 @@
+// NoSql
+1、NoSQL 可以水平扩展的原因有？
+    (tips：NoSQL数据模型简单，没有事务支持，没有Join操作)
 // Redis
 
 
