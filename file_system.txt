@@ -453,3 +453,16 @@
     (tips：在Linux上，这两个错误码的定义数值是相同的，
      通过查看 man 2 read 和 man 2 write，不会返回 EWOULDBLOCK
      返回EAGAIN表示在 Non-Blocking I/O 中，资源暂时不可用)
+
+157、Ext4 中的 write barrier 作用？
+    (tips：在开启Journal时，对于元数据的修改需要先写log，再commit，再修改对应文件的meta，
+     但是在block层有请求re-order逻辑，如果commit先写，log后写，就会出现不一致的log data，
+     write barrier 的作用和CPU中的barrier指令类似，保证barrier之前的写操作完成之后，
+     后面的写操作才能执行)
+
+158、Ext4 默认开启barrier特性，且 Journal中有校验 checksum，如果乱序写入，且transaction中断，
+    那么后续的校验将不通过，本次操作会abort；在高端存储磁盘有 battery-backend时，可以考虑关闭
+    barrier以提高性能
+
+159、fsync 函数返回EIO错误时，如果直接进行重试，fsync会 clear之前有出错标志的page，
+这会潜在的导致数据丢失，Pg数据库目前的做法是fsync返回EIO时，直接panic
