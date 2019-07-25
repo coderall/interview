@@ -3,6 +3,10 @@
     (tips：NoSQL数据模型简单，没有事务支持，没有Join操作)
 // Redis
 
+1、Redis中渐进式rehash实现？
+    (tips：避免了集中式rehash导致系统繁忙，将整个rehash过程均摊到每一次的GET PUT
+     操作中，一步步完成)
+
 
 
 // Memcached
