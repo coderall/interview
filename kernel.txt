@@ -577,6 +577,12 @@
 105、操作系统中inode有cache吗？ dentry呢?
     (tips：都有对应的hash cache)
 
+106、pidstat命令的输出中 minor page fault 和 major page fault 分别表示什么？
+    (tips：minor page fault表示所需的数据页已经在内存中，只不过还没有标记为loaded状态，
+     major page fault表示数据页需要从磁盘等设备中读取
+     一般，major page fault出现的数量太多，表示频繁的读取磁盘)
+
+
 
 // 其他
 
@@ -626,3 +632,5 @@
 	
 6、怎样定制core文件命名规则？
 	(tips：/proc/sys/kernel/core_pattern)
+
+7、Ubuntu系统不再使用/var/log/messages来记录系统事件，现在使用/var/log/syslog来替代
