@@ -499,3 +499,21 @@
 
 167、文件 block 级去重有如下问题，需要额外的指针来记录dedup后的block
 	另，dedup后，上层文件系统没有感知节省下来的block，这样就会导致磁盘利用率并没有提高
+	
+168、什么是读惩罚，什么是写惩罚？
+	(tips：读惩罚是指当要读取的内容没有按照底层磁盘的sector对齐，
+	则一次读取512字节需要读取2个sector；写惩罚也类似，不过写惩罚需要先读出数据，
+	再写回)
+	
+169、direct I/O写入的数据不对齐，会有什么影响？
+
+170、什么是 NCQ？
+	(tips：NCQ指 native command queuing，是一种在HDD和SSD上都可以用的优化技术，
+	驱动使用它来重新排序上层发送的请求，对于HDD来说，这可以减少磁头的移动次数；
+	对于SSD来说，这可以将随机I/O转化为顺序I/O，提高SSD性能)
+	
+171、企业级SSD测试的IOPS都是 满盘测试，而消费级的SSD则使用的是空盘的IOPS数据；
+	且企业级SSD更加看重稳定性，DWPD(Drive Write Per Day，每天的满盘写入次数) 和 MTBF 数据，
+	TBW(Total Bytes Writen)
+	
+	TBW = Total Capacity * 擦写次数/写放大率
