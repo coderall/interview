@@ -242,6 +242,8 @@
 	(tips：忽略，或者说是去掉leading space)
 	
 89、TCP_DEFER_ACCEPT 标志有什么作用？
+    (tips：设置了这个option的listen socket 只有在连接上真正收到了数据时，listener才会被唤醒，
+     这样会减少listener的wake up次数，提高效率)
 
 90、sysctl -a | grep "tcp" | grep "re" 中各种重试次数与时间的设置都有哪些作用？
 
@@ -354,6 +356,25 @@
 
 116、ACK有重传吗？
     (tips：没有)
+
+117、rp_filter 参数有什么作用？
+    (tips：系统开启严格校验数据包源地址，这在多网卡机器上开启有可能导致
+     数据包因为回包的网口和收包的网口不一致而丢弃，另一种情况就是 避免 DDoS攻击)
+
+118、什么情况下会丢弃SYN包，怎么判断？
+    (tips：1、accept连接队列满时 2、SYN序号回绕，
+     当timestamp和tw_recycle两个选项同时开启的情况下，开启per-host的PAWS机制。
+     从而能快速回收处于TIME-WAIT状态的TCP流。
+     但这样真的就能完美的解决令无数人头疼的TIME-WAIT吗？答案是否定的！
+     因为公网中存在太多的NAT设置，当使用per-host的PAWS机制时，
+     是无法保证timestamp是线性递增这一假设的。因为使用同一个NAT地址的两个真实的机器，
+     他们的timestamp是不能保证同步的)
+
+119、TCP 中的 delay ack机制有什么作用？怎么工作？
+    (tips：接收端不是每收到一个packet就回复一个ACK，而是启动一个200ms的定时器，
+     在定时器超时后，检查是否需要发送ACK，如果需要，再发送；
+     这其实是一种假定，即假定发送端在200ms内会发送新的数据过来)
+    
 
 // http
 1、什么是CNAME？
