@@ -512,3 +512,21 @@
 170、上面 169 中提到的 stable page的引入是为了解决应用层写入数据然后计算校验码，
     但是随后的写入有可能改变内存中的数据，这就导致数据不一致。解决办法如上描述，
     当page 正在write back，则block当前的写入，直到之前的写入完成
+	
+171、什么是读惩罚，什么是写惩罚？
+	(tips：读惩罚是指当要读取的内容没有按照底层磁盘的sector对齐，
+	则一次读取512字节需要读取2个sector；写惩罚也类似，不过写惩罚需要先读出数据，
+	再写回)
+	
+172、direct I/O写入的数据不对齐，会有什么影响？
+
+173、什么是 NCQ？
+	(tips：NCQ指 native command queuing，是一种在HDD和SSD上都可以用的优化技术，
+	驱动使用它来重新排序上层发送的请求，对于HDD来说，这可以减少磁头的移动次数；
+	对于SSD来说，这可以将随机I/O转化为顺序I/O，提高SSD性能)
+	
+174、企业级SSD测试的IOPS都是 满盘测试，而消费级的SSD则使用的是空盘的IOPS数据；
+	且企业级SSD更加看重稳定性，DWPD(Drive Write Per Day，每天的满盘写入次数) 和 MTBF 数据，
+	TBW(Total Bytes Writen)
+	
+	TBW = Total Capacity * 擦写次数/写放大率
