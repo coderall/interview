@@ -499,3 +499,16 @@
 
 167、文件 block 级去重有如下问题，需要额外的指针来记录dedup后的block
 	另，dedup后，上层文件系统没有感知节省下来的block，这样就会导致磁盘利用率并没有提高
+
+168、GPT 和 MBR(MSDOS) 分区格式有什么区别？
+    (tips：MBR是 Master Boot Record 格式，有一个分区用来启动系统，且只能有4个主分区，
+     其他的分区要以扩展分区的形式存在，且分区容量不能大于2TB
+     GPT则是为每个partition分配一个UID，Boot信息存储了多个备份，且有CRC校验，
+     分区个数没有限制(可能操作系统级有限制)，分区大小也没有限制)
+
+169、之前看 群主的书中有提到，当page cache中的page write back时，再次写入会block等待，直到写入完成，
+    这里其实是 EXT4 实现的 stable page的概念；具体参考内核中 grab_cache_page_write_begin 函数
+
+170、上面 169 中提到的 stable page的引入是为了解决应用层写入数据然后计算校验码，
+    但是随后的写入有可能改变内存中的数据，这就导致数据不一致。解决办法如上描述，
+    当page 正在write back，则block当前的写入，直到之前的写入完成
