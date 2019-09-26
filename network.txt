@@ -97,6 +97,10 @@
 26、什么是mss，受哪些因素影响？
 
 27、什么是 RPS？什么是 RFS？作用是什么？
+    (tips：RPS表示Recieve Packet Steering， RFS 表示 Recieve Flow Steering，
+     RPS依据hash计算数据包软中断处理CPU，
+     RFS在RPS基础上，根据流表来选择用户态收包的CPU
+     两个策略都尝试最大化的利用Cache，减少因为上下文切换带来的Cache命中率的下降)
 
 28、accept 调用返回时，三次握手是否结束？
 
@@ -302,9 +306,12 @@
 
 105、net.ipv4.tcp_window_scaling 系统变量有什么作用？
 	(tips：之前TCP头部使用8-bits表示窗口大小，这在当下的高速网络传输中已不适用，
-	现在在TCP options 字段中添加了扩展字段，通过位移操作来确定窗口大小，
-	在三次握手过程中大家会协商使用TCP window scaling，如果双方中哪一方不支持，
-	那么使用原来的窗口值)
+	现在在TCP options 字段中添加了扩展字段，数值表示位移的位数，
+	在三次握手发送的SYN报文中会协商使用TCP window scaling，如果双方中任一方不支持，
+	则不使用这一特性；这个取值最大为14，即窗口取值最大为 window * 2^14；
+    这一特性只有在 带宽时延积大于 64K 的系统上有效，因为之前receive window最大值为64K；
+    TCP 协议每一个报文中都有receive window的大小，如果握手时window scale协商成功，
+    那么后续的协议交换中scale都会生效)
 	
 106、net.core.somaxconn 系统变量有什么作用？
 	(tips：listen backlog队列最大数量,这个队列是指已经完成三次握手，
@@ -373,7 +380,11 @@
 119、TCP 中的 delay ack机制有什么作用？怎么工作？
     (tips：接收端不是每收到一个packet就回复一个ACK，而是启动一个200ms的定时器，
      在定时器超时后，检查是否需要发送ACK，如果需要，再发送；
-     这其实是一种假定，即假定发送端在200ms内会发送新的数据过来)
+     这其实是一种假定，即假定发送端在200ms内会发送新的数据过来；
+     如果收到的包大于等于一个MSS，会立即回复ACK)
+
+120、TCP中zero window表示什么？
+    (tips：表示接收端缓存满，无法继续接收数据)
     
 
 // http
