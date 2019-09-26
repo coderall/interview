@@ -247,6 +247,19 @@
 87、MSI 和 MSI-X 表示什么？
     (tips：一种新的中断通知方式，主要用于网卡中断)
 
+88、sched_min_granularity_ns 表示什么意思？
+    (tips：表示每个进程可以运行的最小时间片，
+     CFS算法中每个进程可以运行的时间片相同)
+
+89、sched_latency_ns 表示什么意思？
+    (tips：表示运行队列中所有进程都运行一遍需要的时间，
+     当nr_running*sched_min_granularity_ns > sched_latency_ns 时，sched_latency_ns需要调整
+     为 nr_running * sched_min_granularity_ns)
+
+90、sched_wakeup_granularity_ns 表示什么意思？
+    (tips：当前运行进程的vruntime 和 抢占进程的vruntime 的差，
+     大于 sched_wakeup_granularity_ns所表示的vruntime时，可以抢占)
+
 // 内存管理
 
 1、malloc的实现
