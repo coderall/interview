@@ -265,7 +265,7 @@
     (tips：当前运行进程的vruntime 和 抢占进程的vruntime 的差，
      大于 sched_wakeup_granularity_ns所表示的vruntime时，可以抢占)
 
-// 内存管理
+// 内存管理 mm
 
 1、malloc的实现
 
@@ -607,6 +607,13 @@
      会造成内存的外碎片，导致数据访问效率降低，分页模式则没有这个问题，
      另一方面，在真正使用内存之前，有可能不知道数据的长度，所以段的长度不定)
 
+108、cgroup可以对用户态map的页面进行管理，也可以针对内核使用的内存进行管理，
+    常见的为tcp，当应用触发limit时，cgroup启动reclaim，如果失败，
+    则启动OOM(OOM可以配置为不启动，那么进程会hang或者sleep)；memory.limit_in_bytes为
+    hard limit，对应的有soft limit，超过后cgroup会尽力去回收空间。memsw表示
+    memory+swap的空间使用量，在内存空间紧张时，用户态的匿名映射页会swap out。
+
+109、内核使用的页面不会swap out到二级存储
 
 
 // 其他
