@@ -530,3 +530,6 @@
 	TBW(Total Bytes Writen)
 	
 	TBW = Total Capacity * 擦写次数/写放大率
+
+175、查看磁盘空间时，需要明确文件系统有预留空间，inode table 也会占用空间
+    需要使用 tune2fs -l /dev/sda 查看下 super block的信息，确认空间占用
