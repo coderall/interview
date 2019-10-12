@@ -385,6 +385,11 @@
 
 120、TCP中zero window表示什么？
     (tips：表示接收端缓存满，无法继续接收数据)
+
+121、connect 出错的socket可以直接再次调用connect实现reconnect吗？
+    (tips：不能，如果是timeout错误，会在重传尝试最大次数后调用tcp_write_err，
+     进而调用tcp_done，设置socket的状态为TCP_CLOSE；
+     如果是遇到RST回包，那就直接走CLOSE流程了，也就不能再用这个socket了)
     
 
 // http
