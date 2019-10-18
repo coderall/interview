@@ -390,6 +390,9 @@
     (tips：不能，如果是timeout错误，会在重传尝试最大次数后调用tcp_write_err，
      进而调用tcp_done，设置socket的状态为TCP_CLOSE；
      如果是遇到RST回包，那就直接走CLOSE流程了，也就不能再用这个socket了)
+
+122、SOCK_REUSESOCK可以用在Unix Domain socket之上吗？
+    (tips：不能，man 手册上说 SOCK_REUSEPORT应用于AF_INET和AF_INET6)
     
 
 // http
@@ -431,6 +434,7 @@
   （答案：File descriptors associated with regular files always select true for ready to read, ready to write, and error conditions.）
   
 3、普通的文件描述符可以添加进 epoll 中吗？
+    (tips：不能，普通文件不具有polling特性)
 
 4、路由查找使用什么数据结构？
 
@@ -526,3 +530,16 @@
      1、Packet层面，Packet bypass 内核，让应用更快速的接收到数据，需要自己实现Driver
      2、多核编程，这里的思路和之前多核编程提及的一样，即 数据分化，减少锁的使用，原子指令的支持
      3、内存方面，内存的预分配，专用分配，这一点slab已经实现，hugepage的使用)
+
+35、交换机buffer作用是？
+    (tips：buffer主要用来解决数据传输速度和lookup速度不匹配的问题，如果有 burst flow，
+     后面来的数据需要先放进buffer，如果buffer满，则会drop packet，
+     但队列也不是越长越好，因为队列的加长，意味着等待时间的增加，应用层的latency增加)
+
+36、看交换机规格参数时，需要考虑端口带宽、包转发速率、背板带宽、buffer大小这些参数
+    (tips：端口带宽一般就是常说的交换机带宽值，如家用的100M；
+     背板带宽是指各个端口满速转发时，交换机芯片和各个端口间的数据传输速度，
+     计算公式为 portNum*100M*2；
+     包转发理论值为 portNum*100M/84，84=64+12+8，网络上最小的数据包
+     实际值应该小于这个值；
+     buffer的作用在于应对突发流量)
