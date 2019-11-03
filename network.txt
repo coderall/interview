@@ -15,6 +15,10 @@
 // UDP
 
 1、UDP 可以使用connect吗？
+    (tips：可以，UDP使用connect有一下几个作用
+     1、完成一对一的端到端通信
+     2、实现细节上填充sock结构中的目的ip和port，这样后续就可以像TCP那样使用send/recv接口
+     3、UDP的connect不涉及数据通信，即没有实际的数据发送逻辑)
 
 2、UDP recvfrom 100字节，这时来了个 150字节的数据包，会发生什么？ 如果来了一个 80字节的数据包呢？
 
@@ -57,6 +61,10 @@
 7、epoll poll select 区别与联系？
 
 8、epoll 中 LT ET 区别，使用场景？
+    (tips：ET中，如果没有read socket到 EAGAIN，有可能导致整个处理过程阻塞，
+     服务端因为没有收到足够的数据，还在等(事实上已经有足够的数据了)，
+     而客户端发送了足够的数据，等待服务端回复；
+     使用ET触发的epoll需要设置socket为nonblocking 和 每次read 到 EAGAIN)
 
 9、EPOLL_ONESHOT 应用于哪种场景，作用是什么？
 
@@ -393,6 +401,9 @@
 
 122、SOCK_REUSESOCK可以用在Unix Domain socket之上吗？
     (tips：不能，man 手册上说 SOCK_REUSEPORT应用于AF_INET和AF_INET6)
+
+123、什么时候socket fd会返回可读事件？
+    (tips：这里需要明确的是，不是有数据就可读，有一个水位的东西需要关注)
     
 
 // http
@@ -543,3 +554,14 @@
      包转发理论值为 portNum*100M/84，84=64+12+8，网络上最小的数据包
      实际值应该小于这个值；
      buffer的作用在于应对突发流量)
+
+37、reactor 和 proactor 的关系？
+    (tips：设计模式上，基本分为两种，即thread-based和event-driven，前者的典型代表是apache，
+     简单，但是可扩展性不强，线程间的context switch多，受限于系统可以运行的现场数量。
+     更早的版本基于fork，进程创建的开销更高；
+     reactor 和 proactor本身都是event-driven模型，但是两者的区别在于注册处理的事件源不同，
+     reactor 使用 同步非阻塞的 分发器 串行化的处理socket的可读请求，各个handler需要提前注册；
+     proactor 则使用 异步非阻塞 的分发器 异步的处理事件完成请求。
+     这了强调 非阻塞 是因为，如果采用阻塞 system call，则整个server都会block，
+     无法执行其他逻辑，效率较低，还涉及睡眠唤醒等逻辑，
+     常见的Nginx Redis Node都采用的 Reactor，分发器则为系统提供的 epoll 等)
