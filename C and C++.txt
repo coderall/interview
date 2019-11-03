@@ -129,6 +129,17 @@
     argv 里面各个指针指向的貌似是同一段连续空间的不同位置，所以说可以从
     argv[0]一直覆盖到 argv[argc]
 
+40、kernel中的max宏的设计有哪些考虑？
+    (tips：如果按照直观的考虑 max 宏的定义如下：
+        #define max(a,b) return (a)>(b)?(a):(b)
+     但这样的定义在面对，max(a++, b++)这种调用会引入
+     二义性，所以内核对max有改进
+        #define max(a, b)\
+        (typeof a) _a = a;\
+        (typeof b) _b = b;
+        (void) &a == &b;
+        return _a > _b ? _a : _b)
+
 
 
 
