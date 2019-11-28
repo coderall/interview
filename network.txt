@@ -426,6 +426,12 @@
 13、如果修改http头部的content-length字段会有什么效果？
 	(tips：虽然没有验证过，但是直观感觉会导致服务端收包的大小发生变化，
 	有可能导致包内容被截断，或者服务端等待超时)
+	
+14、一个TCP链接可以发送几个HTTP请求？
+	(tips：在HTTP1.0 中，一个 TCP 链接发送一个 request，服务端回复一个response后，
+	会断开链接，在 HTTP 1.1 中引入了 Connection: keep-alive，这样，一个TCP链接中就可以发送多个HTTP请求，
+	但是，多个HTTP请求必须串行发送，即一个request等待对应response返回后才能继续发送下一个请求，
+	在HTTP2.0中引入了 Multiplexing机制，这样多个request可以并行发送)
 
 // 其他相关
 1、iptables实现原理，使用了哪些算法？
