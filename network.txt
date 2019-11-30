@@ -391,9 +391,15 @@
      进而调用tcp_done，设置socket的状态为TCP_CLOSE；
      如果是遇到RST回包，那就直接走CLOSE流程了，也就不能再用这个socket了)
 
-122、SOCK_REUSESOCK可以用在Unix Domain socket之上吗？
+122、SOCK_REUSEPORT可以用在Unix Domain socket之上吗？
     (tips：不能，man 手册上说 SOCK_REUSEPORT应用于AF_INET和AF_INET6)
-    
+	
+123、IP层根据什么来重组分片了的IP报文？
+	(tips：根据源目的IP/IP报文头中的ID字段/上层协议 这三个来标识属于同一个连接的分片后IP报文
+	这里有一个问题，就是ID字段是一个16bits长度的整数，很容易发生回绕，
+	Linux内核的解决办法是每一个目的IP使用一个不同的初始ID值来尽可能的降低ID冲突的可能；
+	另，在某些NAT场景下，转换后的IP报文源IP都相同，如果恰好ID字段相同，那么有可能发生数据串线，
+	有可能导致正确的数据包因为数据重复而被丢弃)    
 
 // http
 1、什么是CNAME？
