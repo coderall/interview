@@ -38,7 +38,8 @@
 	(tips：和读写锁相同，多个读者之间可以并行访问，但有读者时，写者不用阻塞等待，可以新申请空间，
 	更新后再将原指针替换，具体做法依赖于优雅周期的判断，多个写者之间的同步？ TODO)
 
-16、解释下uptime命令的输出？具体的计算依据是什么？（CPU run queue中 runnable进程和处于D状态的进程数量）
+16、解释下uptime命令的输出？具体的计算依据是什么？
+    (CPU run queue中 runnable进程和处于D状态的进程数量)
 	(tips：计算方式类似于统计时间段内平均值)
 
 17、nice命令的作用有哪些？
@@ -267,6 +268,11 @@
 
 91、为什么CPU访问寄存器快于访问内存，因为访问寄存器只需要一个时钟周期，
     而访存需要多个时钟周期才能拿到数据
+
+92、系统级的load数据从哪里来？
+    (tips：uptime等工具可以查看当前系统的load，这个数值正比于
+     active process 和 处于 uninterruptable状态的进程，
+     load = old * e + (1-e)*processes，即也会参考前一次的load数据)
 
 // 内存管理 mm
 
@@ -631,6 +637,13 @@
 111、OOM计算的是物理内存的使用，malloc返回非NULL，只是表示分配了虚拟内存，
     后续访问时，有可能触发缺页中断，进而引发OOM，一个可取的方法就是malloc之后，
     memset
+
+112、共享内存的实现方式有哪几种？
+    (tips：
+     1、SYS V 方式 调用 shmget 等方法，接口不友好，
+     使用ipcs命令行工具查看具体mem address
+     2、shmget + mmap
+     3、memcreate_fd)
 
 
 // 其他
