@@ -404,7 +404,7 @@
      进而调用tcp_done，设置socket的状态为TCP_CLOSE；
      如果是遇到RST回包，那就直接走CLOSE流程了，也就不能再用这个socket了)
 
-122、SOCK_REUSESOCK可以用在Unix Domain socket之上吗？
+122、SOCK_REUSEPORT可以用在Unix Domain socket之上吗？
     (tips：不能，man 手册上说 SOCK_REUSEPORT应用于AF_INET和AF_INET6)
 
 123、什么时候socket fd会返回可读事件？
@@ -416,6 +416,12 @@
     但是 epoll_wait 采用的是 LIFO，阻塞后，curr是添加到 等待队列头的，
     导致的问题就是 负载不均，可以采用SOCK_REUSEPORT解决。
     
+125、IP层根据什么来重组分片了的IP报文？
+	(tips：根据源目的IP/IP报文头中的ID字段/上层协议 这三个来标识属于同一个连接的分片后IP报文
+	这里有一个问题，就是ID字段是一个16bits长度的整数，很容易发生回绕，
+	Linux内核的解决办法是每一个目的IP使用一个不同的初始ID值来尽可能的降低ID冲突的可能；
+	另，在某些NAT场景下，转换后的IP报文源IP都相同，如果恰好ID字段相同，那么有可能发生数据串线，
+	有可能导致正确的数据包因为数据重复而被丢弃)    
 
 // http
 1、什么是CNAME？
@@ -448,6 +454,12 @@
 13、如果修改http头部的content-length字段会有什么效果？
 	(tips：虽然没有验证过，但是直观感觉会导致服务端收包的大小发生变化，
 	有可能导致包内容被截断，或者服务端等待超时)
+	
+14、一个TCP链接可以发送几个HTTP请求？
+	(tips：在HTTP1.0 中，一个 TCP 链接发送一个 request，服务端回复一个response后，
+	会断开链接，在 HTTP 1.1 中引入了 Connection: keep-alive，这样，一个TCP链接中就可以发送多个HTTP请求，
+	但是，多个HTTP请求必须串行发送，即一个request等待对应response返回后才能继续发送下一个请求，
+	在HTTP2.0中引入了 Multiplexing机制，这样多个request可以并行发送)
 
 // 其他相关
 1、iptables实现原理，使用了哪些算法？
