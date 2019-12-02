@@ -140,6 +140,10 @@
         (void) &a == &b;
         return _a > _b ? _a : _b)
 
+41、system函数是等到cmd执行完后返回吗？
+    (tips：是的，这里联想Unix环境高级编程中的示例，先fork，
+     然后子进程exec，主进程wait)
+
 
 
 
