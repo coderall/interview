@@ -645,6 +645,16 @@
      2、shmget + mmap
      3、memcreate_fd)
 
+113、ulimit -n 可以列出当前对每个进程open file的限制，
+    ulimit -Sn 可以看到 soft limit
+    ulimit -Hn 可以看到 hard limit
+    同时 /proc/sys/fs/file-max 可以设置整个系统打开的文件总数限制
+    同时 /etc/security/limits.conf 这个文件中可以针对user级别设置limit
+    同时 /proc/<pid>/limits文件中可以查看对应process的相关limits
+
+114、实现atomic指令时的lock前缀，提供了一种保证，后续对相关的数据访问独占进行，
+    如果之前的指令有修改这个数据，那么在lock指令执行前也会执行写回
+
 
 // 其他
 
@@ -702,3 +712,6 @@
 	(tips：/proc/sys/kernel/core_pattern)
 
 7、Ubuntu系统不再使用/var/log/messages来记录系统事件，现在使用/var/log/syslog来替代
+
+test
+test2
