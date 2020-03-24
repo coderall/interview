@@ -449,7 +449,15 @@
 
 155、iostat 命令中 avgrq-sz 和 avgqu-sz表示什么意思？
     (tips：avgrq-sz 表示平均 request大小，单位为 sector
-     avgqu-sz表示发送给设备的requests队列长度)
+     avgqu-sz表示发送给设备的requests队列长度，
+     这里有个问题就是iostat的输出和dd或fio工具命令行中的bs大小不一致，
+     从上面的描述中可以看到，avgrq-sz表示的是 request 结构所表示的io请求大小，
+     所以在用户层面的写入后，（1）在 writeback page_cache时；
+     （2）在block层的 plug机制 （3）io 调度器的merge机制 会尝试合并请求，
+     所以会看到avgrq-sz比较大；
+     avgrq-sz的最大值为 /sys/block/sdx/queue/max_sectors_kb ，单位为kb，
+     如果取值 256，则avgrq-sz的最大值为 512,
+     且需要注意，这里统计的是读请求和写请求的和)
 
 156、EAGAIN 和 EWOULDBLOCK 两个错误码有什么区别？
     (tips：在Linux上，这两个错误码的定义数值是相同的，
@@ -548,3 +556,31 @@
     df 使用的是 statvfs 系统调用，是展示整个系统或分区的角度来获取数据；du可能还要考虑follow
     symlink或 hard link的重复计算，而 df 可能还需要考虑系统预留空间，inode的inline data，
     journal 的预留空间等
+
+179、ext系文件系统为什么要有块组的概念？
+    (tips：如果没有块组，那么所有的磁盘数据块只存在于一个大的块组中，
+     对应的，block bitmap也比较大，查询空闲数据块的耗时将增加，解决这个问题的办法就是把磁盘空间
+     再划分为对应的块组，拿到inode number或者block number，只需要进行一个除法运算就可以快速确认
+     属于哪个块组)
+
+180、每一个块组中inode bitmap占一个block，一个block按 4096 bytes计算，则，一个块组中可以包括
+    4096*8 = 32768 个 inode。
+    但是用 mke2fs等工具格式化磁盘时，整个分区的indoe数量 按照 每 16KB 一个indoe的方式来计算，目的是为了
+    节省空间，因为一个inode需要占用 256 bytes空间（super block中存储了一个块组中有几个inode）。
+    使用 mke2fs -N 可以扩大inode数量，但是仍然没有突破 inode bitmap占一个block，只不过inode table数量变大。
+
+181、ext4文件系统中，如果当前的Journal模式为JOURNAL_DATA_MODE，即数据也要写入Journal，
+    那么不支持DirectIO；如果当前文件有inline data，那么也会切回buffer IO模式。
+
+182、在进行DirectIO写入后，需要invalid对应的page cache中的page，这样才能保证在下次buffer I/O操作中
+    拿到最新的数据
+
+183、iostat的数据源来自于/proc/diskstats文件，里面记录了raw data，iostat读取这些数据，
+    然后展示出来。
+    (avgrq-sz是用 读写成功的 bytes/读写请求次数，前者和一个request相关，后者则和这个request里面的bio
+     数量一一对应，虽然在scheduler层会对bio进行merge（merge时需要位置严格相邻），将bio链接
+     到request的bio_tail链表中，整体上bio num不变。
+     在使用 dd if of bs=4K count=1000 oflag=direct 进行测试时，发现 avgrq-sz 为8，刚好为4K，
+     实现为 direct 绕开了 page cache，就不会在生成bio之前对 请求进行merge，所以提交到 request 链表中的
+     都是 4K 的bio，这样在 plug 或 io scheduler merge之后，bio数量没变，所以用 total_bytes/bio_num = 8*512
+     即8个 sector)
