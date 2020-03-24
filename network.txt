@@ -338,8 +338,10 @@
 108、ss 命令看到 处于 listen 状态的 socket 的 Recv-Q 和 Send-Q表示什么意思？
     (tips：listen状态的Recv-Q表示当前accept队列中等待accept的连接数量，
      最大数量受 题目106中所述变量控制，Send-Q表示当前socket的accept backlog取值，
-     为 max(listen_backlog, /proc/net/core/somaxconn),
-     当命令输出中这两个参数相等时，表示当前accept队列满，考虑调大somaxconn数值)
+     为 min(listen_backlog, /proc/sys/net/core/somaxconn),
+     当命令输出中这两个参数相等时，表示当前accept队列满，考虑调大somaxconn数值;
+     如果是已经建立好的链接，Recv-Q表示内核已经收到但是应用还没有读取的数据量，
+     Send-Q表示还在SendBuf中，没有ack的数据量)
 
 109、当半连接队列满时，新来的连接的处理方式为？
     (tips：丢弃新来的连接请求，客户端的connect会超时)
@@ -428,6 +430,13 @@
     同时，如果对应网卡打开了Fair-Queue，在数据中心内部BBR的效率要比CUBIC低5%左右
     内网环境带宽高，时延低，建议继续使用CUBIC
     外网访问可以继续使用BBR
+
+127、当客户端和服务端开启keep-alive特性，且客户端向服务端回复了zero-window，
+    那么，带来的效果就是在 服务端一个链接会长时间的存在
+    可以认为这是慢速攻击的一种
+
+128、当client回复给server zero window后，server会用 persistence timer来向client发送
+    特殊的keep-alive报文，以确保及时知道client可以正常接收数据
 
 // http
 1、什么是CNAME？
