@@ -1,0 +1,10 @@
+// common cmd questions
+
+1、ls -l 显示的total表示很么意思？
+    (tips：表示当前目录下文件占用的底层磁盘block数量，
+     -l 显示的第二列表示当前文件的hard link数量)
+
+2、stat 命令显示的Blocks表示什么？
+    (tips：表示占用的底层磁盘的block数量，即使创建一个很小的文件，
+     block数量也为8，是因为文件系统层面和底层磁盘使用的单位不一样，
+     文件系统层是 page，也就是4096，所以即使文件很小，也会分配8个block来存储)
