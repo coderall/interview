@@ -43,6 +43,8 @@
 21、DIRECT I/O 和 SYNC I/O 的区别是什么？
 
 22、free 命令的显示中 buffer 和 cache 分别代表什么？
+    (tips：现在buffer 和 cache统一都由page cache实现，只不过buffer是比较特殊的直接操作设备文件产生的空间占用，
+     例如，直接读取 /dev/ 设备)
 
 23、文件的覆盖写和追加写有什么区别？
 
@@ -584,3 +586,20 @@
      实现为 direct 绕开了 page cache，就不会在生成bio之前对 请求进行merge，所以提交到 request 链表中的
      都是 4K 的bio，这样在 plug 或 io scheduler merge之后，bio数量没变，所以用 total_bytes/bio_num = 8*512
      即8个 sector)
+
+184、free命令会显示cache/buffer，其实现在的buffer也是通过page cache实现的，而buffer在内核中的表示是
+    buffer_head 结构，这个struct之前用来表示block_device中的block在内存中的数据，也是老的系统中文件系统
+    访问底层的结构，不过现在被bio结构取代，但是在 直接 mmap /dev/下的设备时，仍然有使用，这也就对应了
+    有的文章说 现在的buffer只是对应了裸设备的数据映射。
+    同样的，之前也有文章说 直接 mmap /dev/ 然后再通过其他普通文件系统 read 同一份数据，page cache中有两份
+    这是因为 两者使用了不同的文件系统，对应了不同的inode，也就对应了不同的address_space，这样数据就有了两份，
+    如果修改其中一份数据，另一份不会直接同步。
+
+185、BIO结构完成了从page cache内存地址到dev中sector地址的转换，每一个bio中代表一段连续的地址空间，
+    里面有可能包括多个bio_vec，一个bio_vec表示一个file system block。
+    以16KB连续数据为例，需要一个bio结构，里面包括了4个bio_vec；如果数据不连续，则需要多个bio结构 
+
+186、使用 echo '' > file 这一步，其实是在open中传入了O_TRUNC标志，进而在打开文件时完成文件长度修改。
+
+187、在 /etc/mke2fs.conf 文件中有创建文件系统时的默认配置，通过这些配置可以熟悉了解文件系统都实现了哪些功能，
+    有哪些常用feature

@@ -1,0 +1,7 @@
+// question collection about awesome nginx
+
+1、keepalive_timeout
+    (tips：keepalive连接的超时时间，超过这个时间而没有请求过来，连接会断掉)
+
+2、keepalive_requests
+    (tips：一个连接可以发送的请求数量，超过这个数量后，会断开连接)
