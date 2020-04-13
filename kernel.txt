@@ -666,6 +666,13 @@
 114、实现atomic指令时的lock前缀，提供了一种保证，后续对相关的数据访问独占进行，
     如果之前的指令有修改这个数据，那么在lock指令执行前也会执行写回
 
+115、prctl可以设置运行进程的名，其实现细节应该是设置task_struct里面的cmd等结构
+
+116、free命令显示的 -/+ buffer/cache +表示系统还有多少可用，-表示系统当前已用的，
+    通过向 /proc/sys/vm/drop_cache 写入不同的数值，可以强制刷回cache，但是需要注意，
+    当前的 共享内存和mmap shared page，都是基于tmpfs实现，且 tmpfs不可以刷回，所以，
+    不是所有cache都可以回收。
+
 
 // 其他
 
@@ -723,6 +730,3 @@
 	(tips：/proc/sys/kernel/core_pattern)
 
 7、Ubuntu系统不再使用/var/log/messages来记录系统事件，现在使用/var/log/syslog来替代
-
-test
-test2
