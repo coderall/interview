@@ -603,3 +603,8 @@
      这了强调 非阻塞 是因为，如果采用阻塞 system call，则整个server都会block，
      无法执行其他逻辑，效率较低，还涉及睡眠唤醒等逻辑，
      常见的Nginx Redis Node都采用的 Reactor，分发器则为系统提供的 epoll 等)
+
+38、ifconfig命令的显示中，frame栏表示未对齐的frame长度(默认按8对齐)，而被网卡丢弃；
+    errors表示CRC校验错误，太短，或者太长的frame；
+    overruns表示超过网卡处理速度而被丢弃，通常在网络繁忙时出现；
+    droped则表示访问了未配置的功能，例如，在没有配置ipv6的情况下，收到ipv6报文
