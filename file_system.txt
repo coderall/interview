@@ -603,3 +603,35 @@
 
 187、在 /etc/mke2fs.conf 文件中有创建文件系统时的默认配置，通过这些配置可以熟悉了解文件系统都实现了哪些功能，
     有哪些常用feature
+
+188、debugfs 命令还有个交互模式，里面有一些很有用的命令，可以用于查看磁盘上的数据
+
+189、网友测试中遇到了一个场景，用 dd if=/dev/zero oflag=direct 写入nvme SSD，速度比默认使用buffer快很多，
+    自己找了测试环境验证了下，确实是这样。
+    使用 direct 写入sata HDD，速度和使用 sync 模式差不多，但是nvme快很多。
+    看了对应的代码有如下可能原因：
+    (1)direct IO 直接使用了 用户态buffer 对应的 page，没有数据的拷贝，这在写入场景下同样适用
+    (2)direct IO 直接将request提交到了对应device的 request queue，HDD通常是单队列，
+    但是，nvme SSD队列数可以非常多，处理的速度也比较快
+    (3)nvme SSD 和 HDD设备侧使用的调度算法不同，nvme由于处理速度快，更多的使用noop，
+    HDD常使用CFQ
+
+190、direct I/O 有什么好处？
+    direct I/O 有如下几个好处：
+    (1) 减少CPU利用率，因为如果使用buffered I/O，那么需要将用户空间的数据拷贝到page cache中，
+        相当于执行memcpy
+    (2) 使用buffered I/O 会增加系统内存压力，有可能导致其他cache 命中率较高的文件提前刷回，
+        在下次访问时，又需要读回，即减少page cache整体的抖动。很多数据库产品都是在用户态实现文件的内容缓存，
+        写入数据时采用direct。
+    但是，在采用direct时，需要注意，read/write调用的执行时间可能会增加，这是由direct的执行特点决定的，
+    具体需要考虑direct是将请求一直要发送到通用块层才返回的。而buffered I/O只需要到page cache层就结束了。
+
+191、如果文件之前已经通过buffered I/O访问过，那么direct I/O 的写请求会同步更新page cache。
+
+192、怎么增加磁盘的队列深度？
+    (tips:
+     1、使用异步IO
+     2、多线程并发提交IO任务
+     3、每次写入大块数据，块层会自动按照内核的配置将一个任务切分为多个子任务
+     
+     在压测磁盘时，需要增大磁盘的队列深度，也就是说有积压的任务在等待处理，从而提交dist util)
