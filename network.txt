@@ -113,7 +113,11 @@
     (tips：RPS表示Recieve Packet Steering， RFS 表示 Recieve Flow Steering，
      RPS依据hash计算数据包软中断处理CPU，
      RFS在RPS基础上，根据流表来选择用户态收包的CPU
-     两个策略都尝试最大化的利用Cache，减少因为上下文切换带来的Cache命中率的下降)
+     两个策略都尝试最大化的利用Cache，减少因为上下文切换带来的Cache命中率的下降，
+     注意，RPS的实现中需要注意，开启后，并不会减少原来CPU的软中断数量，
+     它的工作原理是通过IPI来告诉其他CPU进行软中断处理来收包，对应的CPU的 %soft 会增加，
+     留给应用层的CPU时间减少
+     RSS 表示 Receive Side Steering 即常说的 网卡多队列，可以通过查看 /proc/interrupts 来确认对应网卡是否有开启)
 
 28、accept 调用返回时，三次握手是否结束？
 
@@ -438,6 +442,20 @@
 128、当client回复给server zero window后，server会用 persistence timer来向client发送
     特殊的keep-alive报文，以确保及时知道client可以正常接收数据
 
+129、tcp_max_tw_buckets 这个参数的意思是规定了系统中time_wait状态的socket的数量上限，如果
+    超过这个限制，则time_wait状态的socket会立即关闭，不再等待2MSL。
+
+130、TCP关闭连接时使用四次握手，什么时候会变成三次握手呢？
+    (tips：被动关闭方启用了延时ack机制，收到主动方的 FIN时，没有立即回复ack，
+     但应用层同时也没有数据要发送，所以ack 和 fin 一起发送，四次握手变成三次)
+
+131、epoll触发EPOLLIN 或 EPOLLOUT事件有什么条件吗？
+    (tips: EPOLLIN事件需要满足sk队列中的 rcv_next - copied_seq >= target，即tcp队列收到的数据量，
+     减去已经拷贝到用户态的数据量，大于SO_RECVLOWAT值，这个值默认为1，所以说EPOLLIN事件基本每次都会触发；
+     但是上面也只是考虑了tcp sock，还有EPOLL自己的逻辑需要考虑；
+     EPOLLOUT事件，即socket可写需要满足wmem 空间大于 总量的1/3，这通常用来计算客户端的最小接收速度，
+     因为通常情况下，服务端会设置send timeout)
+
 // http
 1、什么是CNAME？
 
@@ -608,3 +626,5 @@
     errors表示CRC校验错误，太短，或者太长的frame；
     overruns表示超过网卡处理速度而被丢弃，通常在网络繁忙时出现；
     droped则表示访问了未配置的功能，例如，在没有配置ipv6的情况下，收到ipv6报文
+
+39、在配置了bond0的机器上用tcpdump 抓包时，不能使用 -i any ，而要指定bond的网卡
