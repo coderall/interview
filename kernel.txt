@@ -673,6 +673,12 @@
     当前的 共享内存和mmap shared page，都是基于tmpfs实现，且 tmpfs不可以刷回，所以，
     不是所有cache都可以回收。
 
+117、使用多线程程序观察到虚拟内存很高，为什么？
+    (tips: glibc从2.10版本开始引入了一个MALLOC_ARENA_MAX参数来申请thread_local的arena空间，
+     arena的数量在64位系统下默认为2*cpu cores，对应的内存空间大小为 2*cpu cores * arena size，
+     arena size为 64M；
+     可以通过设置MALLOC_ARENA_MAX环境变量或者通过mallopt函数来控制这一行为)
+
 
 // 其他
 
