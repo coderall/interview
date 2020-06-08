@@ -7,3 +7,22 @@
 
 2、上述过程中，不能使用rbp寄存器，因为使用 -fomit-frame-pointer 选项编译时，
     会去掉rbp寄存器的使用
+
+3、gcc 4.x及以下的版本的 string实现是基于引用计数和 COW，gcc 5.x 替换了另一种短字符优化sso的方案，
+    其实现就是string分配16字节的预留空间，和allocated_capacity保存在一个union中。
+
+4、gcc的-l选项只在编译时起作用，如果是静态库，那么因为已经打包进入binary，运行时无需特殊指定库路径，
+    如果是动态库，那么gcc会在默认路径下找库，和编译时库路径无关。
+    LD_LIBRARY_PATH环境变量就是指定运行时库路径的。
+    编译时可以通过 -W,--rpath 来指定运行时的动态库路径
+
+5、gcc在使用静态库时，不会把整个库都打包进去，而是会分析调用链，按需加载使用，减小binary大小
+
+6、想查看gcc默认的搜索头文件路径，可以在编译时加上 --verbose选项
+
+7、/lib64/ld-linux-x86-64.so.2 这个文件是linux默认的 dynamic-linker，在命令行执行 chmod 等程序时，
+    系统其实执行的是 /lib64/ld-linux-x86-64.so.2 chmod，它的作用是完成动态库的加载，然后执行ELF程序
+    所以可以测试一个binary 没有 可执行权限，然后由 /lib64/ld-linux-x86-64.so.2 binary 也是可以启动的
+
+8、为什么编译时不需要显示的指定 glibc的库
+    glibc库的路径已经固化到gcc中了，不用再显示指定，除非要用自己的glibc库
