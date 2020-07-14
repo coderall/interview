@@ -152,6 +152,9 @@
     (tips：是的，这里联想Unix环境高级编程中的示例，先fork，
      然后子进程exec，主进程wait)
 
+42、在使用localtime, inet_ntoa 等等函数需要小心，建议使用对应的多线程版本
+   例如：localtime_r, inet_ntop 等 
+
 
 
 
@@ -225,6 +228,9 @@
     (tips：一种简单的实现是 在类中定义private 拷贝构造函数，但是这种方式不够清晰
      更好的做法是 定义个 模板类，定义 pravate的拷贝构造函数，然后 子类 private 继承
      Uncopyable 类)
+
+27、C++里面的匿名namespace中的成员，相当于添加了static属性，因为编译器实际上会为每一个匿名的namespace
+    生成一个名称，且添加using声明，但是这个名称在其他模块是不可见的，这也就添加了internal属性。
 	
 	
 // debug
