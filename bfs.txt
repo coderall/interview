@@ -1,0 +1,17 @@
+// bfs related
+
+1、bfs SDK的接口整体上继承了Posix风格，理解起来比较容易。
+
+2、bfs SDK中写入逻辑是先写到本地缓存中，大小为 256KB，满了后，后台异步的刷新到chunkserver中，
+    所以当SDK接口返回时，数据并一定写入chunkserver，且chunkserver在open本地文件时，
+    没有使用O_SYNC标志。
+
+3、现在看，bfs没有将文件切分为 chunk，本地上传一个大文件，对应的chunkserver也有一个同样大小的文件
+    (注：这个理解可能随着后面代码阅读的深入改变)
+
+4、bfs SDK写入支持链式写和星型写，但是没有相关的慢盘规避策略。
+
+5、chunkserver中有统计load，数据源来自于pending状态的buffer数量。
+
+6、CreateFile逻辑中，先Create成功，然后同步日志，如果在Create完成，
+    但是在同步Log前，程序异常退出，是否会造成某些数据不一致。
