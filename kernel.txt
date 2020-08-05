@@ -679,6 +679,28 @@
      arena size为 64M；
      可以通过设置MALLOC_ARENA_MAX环境变量或者通过mallopt函数来控制这一行为)
 
+118、在/proc/$PID/task目录下可以看到当前进程下各个线程的详细信息
+
+119、SIGSEGV信号如果是由进程自己触发，则信号信息中的pid为0
+
+120、NUMA与SMP相比，个人认为最大的区别在于拓扑结构上的差异，这些差异带来了
+    跨node内存访问延迟(QPI访问)，cache一致性等等的问题，其他一些问题上面也有讨论。
+
+121、vfork新建进程时，不拷贝父进程的页表，所以创建进程的速度比较快，且父进程阻塞，直到
+    子进程调用了execve或者 _exit()，注意在vfork创建的子进程退出时，不能使用exit，而要
+    使用_exit()，之所以只能使用_exit，是因为glibc库在调用exit时，会进行一些清理工作，
+    会访问到父进程的内存空间，而vfork创建的进程，不能直接访问父进程的数据。
+
+122、hugepage的使用有两种方式，一种是使用系统预留的hugepage，数量由
+    /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages 文件内容控制，
+    使用前需要在上述文件中写入期望系统预留的hugepage数量，然后在mmap等调用中显示的传入MAP_HUGETLB参数。
+    这种预留的内存空间常驻内存不会被swap，常用于和设备的DMA操作，公司里面实现的用户态文件系统和NVMe设备交互时也有采用。
+
+123、内核会针对每一个page统计MCE(Machine Check Exception)，如果超过阈值，那么会进行
+    soft_offline_page，即将出错的页面内容拷贝到其他物理页面，然后将出错的页面下线，
+    这一操作对应用透明。
+    MCE的相关配置文件位于 /etc/mcelog.conf
+
 
 // 其他
 
