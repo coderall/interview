@@ -223,3 +223,6 @@
 	（tips：依赖于libaio，但不是所有的IO操作都依靠异步，一般只用于read-ahead和write data file pages场景）
 	
 100、MySQL show profile， show profile cpu for query 1 查看具体SQL性能数据
+
+101、sharding 和 partition的区别，sharding是为了解决单机存储空间不够而对数据进行物理划分，
+    而partition是一种逻辑划分，partition中可以有sharding，sharding中也可以有partition
