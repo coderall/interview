@@ -76,6 +76,8 @@
      但像下面nginx的说明一样，在高并发环境下，惊群并不显著)
 
 11、time_wait 状态作用是什么？
+    (tips: 1、避免老的链接上的数据再次发给新建立的连接，导致数据一致性问题
+        2、如果回复对端FIN的Ack丢失，可以进行重传)
 
 12、怎样避免出现 time_wait
 
@@ -475,6 +477,36 @@
     在TcpExt 部分，有一个TCPLostRestransmit 这个表示丢失的重传包数量，这个更能表示网络质量
     还有一个 fast retransmit，具体可以参考快重传的解释
 
+135、在建立连接时，SYN包中的Sequence Number就是Initial Sequence Number，
+    这个数字在两端可以不一样
+    这个数字在每次建立连接时，都不一样，这样可以避免前后两次建立连接带来的混淆
+
+136、Path MTU怎么确定？
+    (tips:发送一个大的ip数据包，然后添加IP_DONTFRAG标志，如果超时没有收到ack，那么减少包的大小
+     直到收到ack
+     这个和traceroute的原理很像)
+
+137、TCP允许同时打开一个socket，那允许同时关闭吗？状态流转是怎样的？
+    (tips: 允许同时关闭，两边的socket都会完整的经历 ESTAB->FIN_WAIT_1->FIN_WAIT_2->TIME_WAIT 状态流转)
+
+138、TCP的接收端怎么确认包丢失？
+    (tips: 如果收到的包的Sequence Number出现跳变或缺失，则可以判断有数据包丢失)
+
+139、ssthresh 取值为 INFINITE，在后面的传输过程中，依靠拥塞控制算法，ssthresh会逐渐的靠近准确值
+
+140、tcp慢启动过程中的cwnd怎么取值呢，首先尝试从路由信息中获取cwnd，如果没有，那么取系统定义的
+    TCP_INIT_CWND，同时还要参考接收方的接收窗口。
+    对于发送小数据量来说，如果链路RTT比较高，那么传输时间所占比例较小，大部分时间花费在了数据
+    传输路径上，这时一个调优选项就是调高 TCP_INIT_CWND值。
+    同时，建议关闭 tcp_slow_start_after_idle。
+    但是关闭这个flag后，有一个问题，就是会带来burst流量，例如，链接空闲一段时间后，突然要
+    发送数据，复用了之前的窗口值，这时数据包在中间路由器被drop的可能性增加(因为比较大)。
+
+141、tcp incast是指多对一的数据流向拓扑，即多个源向一个目的写入数据，会导致目的端交换机buffer满，
+    出现丢包，反馈到源端就是出现数据重传。
+    解决方案一般是升级到更高buffer容量的交换机，另一方面尝试源和目的就近部署，
+    减少网络跳数
+
 // http
 1、什么是CNAME？
 
@@ -513,6 +545,9 @@
 	但是，多个HTTP请求必须串行发送，即一个request等待对应response返回后才能继续发送下一个请求，
 	在HTTP2.0中引入了 Multiplexing机制，这样多个request可以并行发送)
 
+15、标准http header中的字段都是大小写不敏感的，浏览器已经对这个进行了处理，
+    在做服务端开发，或者客户端解析时需要注意
+
 // 其他相关
 1、iptables实现原理，使用了哪些算法？
 
@@ -544,6 +579,11 @@
 11、tcpdump工作原理？
 
 12、什么是bonding技术？常用的工作模式有哪些？
+    (bond0 的配置选项可以参考 /etc/sysconfig/network-script/ifcfg-bond0 文件，
+    参数中 mode=4 表示采用 802.3ad标准来组成聚合链路来发送和接收数据包，这个需要
+    上游交换机支持；miimon 参数表示 mii 监控的时间间隔，用来监听底层硬件是否正常；
+    xmit_hash_policy表示采用的hash规则，常用的有 layer3+4 表示利用ip层的源&目的地址和
+    TCP层的源&目的端口)
 
 13、网络设备中 什么叫 “MAN Core”？
 
