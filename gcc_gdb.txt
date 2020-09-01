@@ -39,3 +39,9 @@
     strerror core的原因是，编译器将函数返回值转为int，而64位环境下指针为8bytes，int为4bytes，访存异常。
     lseek这个是因为，如果第二个参数显示的写为字面值，编译器传参为 int，但是函数中用的是 8bytes的数据，
     会引入一些非预期数据，导致seek结果非预期。
+
+12、高版本中的gdb可以直接查看vector中的数据，在较低版本中，需要 *(vector.M_impl.M_start)@vector.size() 
+    这种方法来看 vector 全部内容
+
+13、gcc -M test.c 选项可以看到编译时所有include的头文件
+    gcc -MM选项是过滤了系统头文件之后的输出
