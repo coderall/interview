@@ -10,3 +10,7 @@
     old master将listen fd写入环境变量，new master进程启动后会尝试读取listen fd，
     然后加入自己的epoll list中，中间还有其他一些信号操作。
     整体上，平滑升级的关键是listen fd的迁移，其他通信用的fd则采用lazy模式，等待通信完成自然关闭
+
+4、Nginx自身没有带日志切分功能，但是可以通过管道的方式将日志输出到cronolog中，日志文件定义中有
+    格式化的字符串，cronolog自动切换文件进行写入，也就完成了日志切割。
+    
