@@ -1,6 +1,15 @@
 // NoSql
 1、NoSQL 可以水平扩展的原因有？
     (tips：NoSQL数据模型简单，没有事务支持，没有Join操作)
+
+2、数据库的索引数据结构在选型时，面临三方面的问题，即RUM(Read Optimization / Update Optimization / Memory space)，
+    这三个方面分别对应着不同的索引算法实现。
+    (1)读优化的数据结构有，hash，trie等
+    (2)写优化的数据结构有，lsm，partitioned-B-Tree等
+    (3)空间优化的数据结构有，bloom filter等
+    不同的应用应该根据自己的特点进行选择
+    上述细节可以参考RUM的论文
+
 // Redis
 
 1、Redis中渐进式rehash实现？
@@ -15,6 +24,11 @@
     写操作，之前因为sleep而过期的锁会被拒绝写入数据。
     当前redlock算法依赖于集群中的大多数返回加锁成功，但是当出现网络分区等异常场景时，
     算法没法保证加锁的正确性。
+
+3、redis中如果某个key出现热点，怎么解决呢？思路可能有如下几点
+    (1)QoS限流，当前也是这么做的
+    (2)本地缓存，减少访问redis量
+    (3)热点key添加其他信息，如timestamp，这样人为区分开访问节点
 
 
 
