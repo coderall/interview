@@ -482,6 +482,8 @@
 
 160、iostat 命令中的 rKB/s 或 wKB/s表示？
     (tips：表示每秒 读取 或 写入的数据量)
+    r/s 和 w/s 分别表示什么
+    (tips：表示完成merge后的读写请求request数量，对应内核中的request，注意，是merge后的)
 
 161、产品宣传时提到 IOPS 的数据时，也要同样考虑 IO 的 latency 数据，
     这两个同步提高了，才能说明从硬件到软件都有优化
@@ -664,6 +666,47 @@
 199、AEP(Apache Pass)是intel Optane产品的代称，是一种以3D XPoint介质为基础实现的非易失性存储介质，
     它提供的数据访问带宽比内存低，但是比FLASH高，同时具有持久化功能，可以用来实现更快速的缓存系统
 
+200、lsof的输出中，FD列中的显示中，mem表示mmap的文件，mmap表示内存映射的设备，txt表示二进制可执行文件，
+    数字后面跟 r w u，其中，数字表示进程中fd number，r w u分别表示读 写 混合读写
+
+201、在调查磁盘读写高时，除了考虑常用的 read/write 调用，其他还有 mmap 需要考虑，
+    还有一个就是libaio的使用，这在需要trace系统调用的场景下尤其需要注意
+    (tips:libaio并没有增加新的读写接口，数据还是要通过file_operation中的接口来完成读取，
+     所以在某些 trace 工具中，通过hook generic_read/generate_write来统计除mmap以外的读写
+     是可行的)
+
+202、binary的text section加载进内存后，page属性会被标记为 executable，且禁止写入，那么在内存紧张时，
+    这部分内存会被回收，带来的问题就是可以看到进程在不停的读磁盘文件，其实是加载binary的文件内容到
+    内存中，这个现象和swap有点像，但还不一样，因为clean page是可以直接被回收的，没开启swap时，
+    也不同执行swap out
+
+203、ext3/ext4 文件系统在文件删除后，会清除inode中的size 和 block pointer字段。如果需要恢复被删除的文件，
+    则需要读取文件系统 journal 中记录的日志来undo对应的操作。
+    文件系统的journal并不是一个普通的文件，对用户不可见，但是文件系统可以对它进行读写。debugfs 工具的logdump
+    可以看到文件内容。
+    网上说 ext2 在文件被删除后只是将inode标记为 deleted，没有清楚对应的block pointer等字段，但是在1.12的代码中
+    看到是会清楚 block pointer，所以这里待进一步确定！
+
+204、内部ext4 挂载时都用了 nodelalloc选项来关闭delay alloc。delay alloc的作用是在buffer I/O中，数据写入
+    page cache时不立即进行磁盘快的分配，而是等到上层调用fsync或定时写回时才分配。
+    但是在文件写入时(不管是写入page cache，还是写入磁盘)，要持有一把锁，一般情况下，写入很快完成；但是
+    delay alloc 因为将块的分配推后，等到真正需要分配时，需要的块有可能很多，导致延迟增加，进一步影响
+    应用的响应。
+    delay alloc的优点有减少分配块次数，单次的写入延迟降低；且批量分配能将文件内容尽可能存放在连续的磁盘块上，
+    有利于后续的I/O；
+    缺点就是：有可能某一次的写入延迟增加，且存在page cache内容准备刷回磁盘发现磁盘没有空间这种情况。
+
 // block layer
 1、io_submit调用理论上是非阻塞的，但是如果执行sync写入，或者有meta data I/O，或者，设备中能提供的
     request数量有限，如果超过这个限制，也只能阻塞进入等待。
+
+// trace
+1、通过iostat看到某个磁盘util高，怎么确认是哪个进程在进行I/O？
+    (tips：首先通过df查看磁盘挂载在哪个目录，然后通过lsof输出对应目录下所有打开的文件，参考文件打开模式，
+     然后过滤进程，利用 pidstat -d -p $PID，查看具体某个进程的IO量，同时，也可以通过strace查看read和mmap
+     系统调用的使用情况，进一步确定是在读写哪个文件)
+
+2、怎么确认某块硬盘状态是正常的？
+    (tips：现在的硬盘，包括SSD都支持SMART特性，所以可以使用smartctl --all 或 smartctl -H dev 命令来查看对应盘的信息
+     如果确认磁盘发生了错误，可以使用badblocks命令来扫盘，以确认具体哪个block损坏；
+     执行检查时，可能需要辅助使用 fdisk -l 或 dumpe2fs -h dev 命令来确认一些硬件或文件系统元数据)
