@@ -696,6 +696,25 @@
     有利于后续的I/O；
     缺点就是：有可能某一次的写入延迟增加，且存在page cache内容准备刷回磁盘发现磁盘没有空间这种情况。
 
+205、lsof的输出 或者 ls -l /proc/$PID/fd/ 结果中有 anon_inode，这是内核中的anon_inodefs伪文件系统下面的
+    inode，一般多用于eventfd，signalfd，timerfd等，这类文件描述符并没有真正对应inode，但是为了保持语义一致，
+    内核会为对应的fd分配inode。
+    /proc/$PID/fd/ 输出格式一般为 type:[inode number]，如果type为socket，那么通过inode number可以在
+    /proc/net/ 目录下的 tcp/udp/unix 等文件中找到详细信息
+
+206、当磁盘开启了write cache时，数据写入磁盘上的DRAM后，立即向上层返回成功，保证了顺序写和随机写性能，
+    但是存在数据掉电丢失的问题。如果关闭write cache，那么可以保证数据安全。
+    现在有PWC技术，可以保证在掉电时，仍然能写入少量数据（M级别）
+    使用 hdparm -W /dev/sda 命令可以查看磁盘的write cache是否打开
+
+207、/proc/$PID/io 文件里面的rchar表示read或pread系统调用中传入的参数之和，对应的wchar表示write或pwrite
+    传入的参数之和；read_bytes 表示真正从后端设备读取的数据量，统计发生在submit_io这一层，write_bytes则
+    表示page-cache写回后端设备的数据量
+    iotop命令中，total 列统计的就是各个process的rchar和wchar
+    而actual 列统计的则是/proc/vmstat中的pgpgin 和 pgpgout，单位为KB
+    对于读操作，pgpgin 和 read_bytes 保持同步更新，但是写操作在submit_bio层更新pgpgout，在__set_page_dirty调用
+    中更新write_bytes
+
 // block layer
 1、io_submit调用理论上是非阻塞的，但是如果执行sync写入，或者有meta data I/O，或者，设备中能提供的
     request数量有限，如果超过这个限制，也只能阻塞进入等待。
@@ -704,7 +723,9 @@
 1、通过iostat看到某个磁盘util高，怎么确认是哪个进程在进行I/O？
     (tips：首先通过df查看磁盘挂载在哪个目录，然后通过lsof输出对应目录下所有打开的文件，参考文件打开模式，
      然后过滤进程，利用 pidstat -d -p $PID，查看具体某个进程的IO量，同时，也可以通过strace查看read和mmap
-     系统调用的使用情况，进一步确定是在读写哪个文件)
+     系统调用的使用情况，进一步确定是在读写哪个文件，有时存在一种情况，使用iostat或iotop可以看到读写流量，
+     但是trace并没有发现有read/write，那么有一种情况就是进程在频繁的调用fsync，需要使用其他工具来trace sync
+     类的调用)
 
 2、怎么确认某块硬盘状态是正常的？
     (tips：现在的硬盘，包括SSD都支持SMART特性，所以可以使用smartctl --all 或 smartctl -H dev 命令来查看对应盘的信息
