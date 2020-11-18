@@ -276,6 +276,9 @@
      所以说，如果通过命令看到系统负载高，不一定是CPU繁忙，也有可能是
      系统I/O繁忙，更多的进程在等待着从磁盘等设备读取数据)
 
+93、操作系统中并没有为cgroup添加专用的system call，而是通过 cgroup fs来完成
+    进程的资源隔离操作
+
 // 内存管理 mm
 
 1、malloc的实现
@@ -708,12 +711,14 @@
 125、内核回收内存空间时，可能会导致sys cpu利用率升高，对应的解决办法是查看 /proc/buddyinfo 确认是
     哪一阶的内存比较紧张。然后可以通过调低vm.min_free_kbytes系统参数来以更高的频率主动触发内核的回收行为。
     内核管理内存是划分Zone的，具体信息保存在 /proc/zoneinfo 。每一个Zone中都有 high，low，min三个watermark，
-    当某个zone中的内存水位低于low时，kswapd会被唤醒，当水位低于min时，大块的内存申请可能会触发direct reclaim或者
-    OOM。
+    当某个zone中的内存水位低于low时，kswapd会被唤醒，直到水位回到high以上，
+    当水位低于min时，大块的内存申请可能会触发direct reclaim或者OOM。
     vm.min_free_kbytes 调整的过低，那么系统回收内存的速度将会非常慢，在运行的过程中，当需要回收内存时，可能会导致死锁。
     vm.min_free_kbytes 调整的过高，那么会导致OOM过于频繁，应用会异常退出。
     当我们设置了 vm.min_free_kbytes后，内核会根据各个Zone的大小分别计算出min数值。
-    在使用free命令时，我们看到的可用内存空间不一定就可以用来申请，因为min以下的空间是保留给内核使用的，
+    在使用free命令时，我们看到的可用内存空间不一定就可以用来申请，/proc/sys/vm/lowmem_reserve_ratio这个文件
+    里面定义了各个zone中保留的页面比例，当高端内存向低端内存申请内存时，需要判断 free_pages 和 min + reserved_page
+    的大小关系，如果小于，那么申请失败（参考mm/page_alloc.c __zone_watermark_ok函数）
     应用可用内存需要减去这个数值。所以在malloc或者mmap失败时，可以查看这个参数，确认下是否配置正确。
     在线上系统中，可以适当的调整这个数值来适当的增加内核主动回收频率，减少direct reclaim
 
@@ -722,6 +727,9 @@
     统计devfs中inode结构中i_mapping字段映射的页面数量，一般直接读取设备时，会分配这一数据，
     这也就和之前看的buffer表示块设备文件数据占用内存的说法一致。
     这部分内存和普通内存的用法一样，如果写入数据，也需要刷回磁盘，如果只读，那么对应内存会被回收(干净页)
+
+127、/var/log/messages 这个文件记录了系统中很多信息，包括系统启动，关闭，OOM，shell的操作日志等。
+    Ubuntu等发行版使用的是 /var/log/syslog 来记录这些信息
 
 
 // 其他
