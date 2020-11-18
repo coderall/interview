@@ -19,3 +19,7 @@
 
 7、ss -at '( sport = :80 or dport = :80 )' 可以通过端口来过滤链接，
     也就可以快速的确认是否有服务在监听某个端口
+
+8、last reboot可以查看机器的重启信息
+    (tips：last命令读取的/var/log/wtmp文件，可以查看对应用户的登录信息，例如：
+     last -n 10 user_name)
