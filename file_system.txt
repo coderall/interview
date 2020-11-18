@@ -476,6 +476,8 @@
 158、Ext4 默认开启barrier特性，且 Journal中有校验 checksum，如果乱序写入，且transaction中断，
     那么后续的校验将不通过，本次操作会abort；在高端存储磁盘有 battery-backend时，可以考虑关闭
     barrier以提高性能
+    (barrier之前是通过drain request_queue 然后再发送一个flush请求实现的，这样虽然可以达到预期效果，
+     但是会影响性能)
 
 159、fsync 函数返回EIO错误时，如果直接进行重试，fsync会 clear之前有出错标志的page，
     这会潜在的导致数据丢失，Pg数据库目前的做法是fsync返回EIO时，直接panic
@@ -604,6 +606,11 @@
     以16KB连续数据为例，需要一个bio结构，里面包括了4个bio_vec；如果数据不连续，则需要多个bio结构 
 
 186、使用 echo '' > file 这一步，其实是在open中传入了O_TRUNC标志，进而在打开文件时完成文件长度修改。
+    (tips：O_TRUNC的实现中，首先对inode->i_mutex加锁，然后修改inode->i_size，再invalid page cache，
+     这时有一个特殊的点，就是如果这个page mmap到用户态，则需要修改页表，用户的下次访问需要走page fault的流程，
+     重新读取文件内容
+     这次还验证了一个场景，一个进程读文件，另一个后台进程覆盖文件内容，那么第一个线程会读取到新内容，
+     所以说，文件系统并没有保证一致性)
 
 187、在 /etc/mke2fs.conf 文件中有创建文件系统时的默认配置，通过这些配置可以熟悉了解文件系统都实现了哪些功能，
     有哪些常用feature
@@ -714,6 +721,10 @@
     而actual 列统计的则是/proc/vmstat中的pgpgin 和 pgpgout，单位为KB
     对于读操作，pgpgin 和 read_bytes 保持同步更新，但是写操作在submit_bio层更新pgpgout，在__set_page_dirty调用
     中更新write_bytes
+
+208、磁盘控制器频繁的下发SMART指令，也会对性能产生影响，一般都是分钟级的采样。
+    这也就带来一个问题，上层怎么快速的发现磁盘的问题，这就要用一些写入测试来辅助，
+    例如现在在用的 write_test 方法等
 
 // block layer
 1、io_submit调用理论上是非阻塞的，但是如果执行sync写入，或者有meta data I/O，或者，设备中能提供的
