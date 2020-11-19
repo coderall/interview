@@ -9,3 +9,5 @@
 4、《The Garbage Collection Handbook》 Author Richard Jones
 
 5、《Virtual Machines》 Author James E. Smith
+
+6、《Technical Report on C++ Performance》
