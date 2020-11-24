@@ -1,0 +1,10 @@
+# 存储硬件 or 存储产品相关
+# storage hardware or production related
+
+1 NoF(NVMe over Fabrics)的实现中和本地NVMe访问有哪些区别
+    (tips: 从如下几点来分析
+     (1) 设备的识别,本地盘通过总线系统和完成,而NoF则需要NVMe Qualified Name即NQN来识别
+     (2) 设备的发现,本地盘通过总线通知,而NoF需要一种协议模式来发现和连接,有点像TCP
+     (3) 存储命令的排队模型,本地盘直接使用基于内存的Queue,但是NoF则需要一个Message-based的排队系统
+     (4) 数据传输方面,本地盘直接使用PCIe协议中的Physical Region Page,而NoF需要Scatter-Gather List的支持)
+
