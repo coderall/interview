@@ -354,7 +354,10 @@
      还是要申请物理内存，并且要考虑OOM机制的影响)
 
 26、系统可配置的处理overcommit策略都有哪些？
-    (tips：vm.overcommit_memory和vm.overcommit_ratio proc变量的取值)
+    (tips：vm.overcommit_memory和vm.overcommit_ratio proc变量的取值
+    具体修改的是/proc/sys/vm/overcommit 和 /proc/sys/vm/overcommit_ration 这两个文件中的内容
+    其中overcommit=0,mmap传入MAP_NORESERVE则不进行参数检查;如果为1,表示允许overcommit;
+    如果为2,可以使用的最大虚存为Swap+RAM*overcommit_ration/100,且不允许超过这个限制)
 
 27、怎样判断进程有overcommit行为？
 
@@ -731,6 +734,16 @@
 127、/var/log/messages 这个文件记录了系统中很多信息，包括系统启动，关闭，OOM，shell的操作日志等。
     Ubuntu等发行版使用的是 /var/log/syslog 来记录这些信息
 
+128、dmesg 或者上面 /var/log/messages有记录进程发生segment fault时的信息，常见的是 segfault at xxx ip xxx sp xxx error xxx
+    其中 ip 指向的是当前正在执行的指令，加上 at 后面的偏移量可以得到调用栈中的的caller(栈地址是从大到小，栈顶的地址小)
+    error 是一个位图，记录具体的错误信息
+    page fault error code bits:
+    *
+    *   bit 0 ==   0: no page found   1: protection fault
+    *   bit 1 ==  0: read access     1: write access
+    *   bit 2 ==     0: kernel-mode access  1: user-mode access
+    *   bit 3 ==               1: use of reserved bit detected
+    *   bit 4 ==              1: fault was an instruction fetch
 
 // 其他
 
