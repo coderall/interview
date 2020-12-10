@@ -346,7 +346,9 @@
      需要修改页表内容，通过PTE表项可以拿到对应虚拟地址对应的在swap中的
      物理页面内容。
      2.6 内核针对多个连续页面内容新增了 extent 属性，可以向文件系统那样
-     操作多个连续物理页面)
+     操作多个连续物理页面
+     线上有可能不开swap，因为swap会带来额外的磁盘IO，会引起应用进程延迟增加，
+     同时，swap的读回又会带来随机IO)
 
 25、什么是内存overcommit？
     (tips：操作系统向外提供的内存总量比 RAM+Swap 多，这里有一个假设就是，
@@ -735,7 +737,8 @@
     Ubuntu等发行版使用的是 /var/log/syslog 来记录这些信息
 
 128、dmesg 或者上面 /var/log/messages有记录进程发生segment fault时的信息，常见的是 segfault at xxx ip xxx sp xxx error xxx
-    其中 ip 指向的是当前正在执行的指令，加上 at 后面的偏移量可以得到调用栈中的的caller(栈地址是从大到小，栈顶的地址小)
+    其中 ip 指向的是当前正在执行的指令，加上 at 后面的偏移量可以得到调用栈中的的caller(栈地址是从大到小，栈顶的地址小)，这里记录的
+    地址都可以使用addr2line工具得到对应的代码行信息
     error 是一个位图，记录具体的错误信息
     page fault error code bits:
     *
