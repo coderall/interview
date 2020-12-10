@@ -351,7 +351,7 @@
      为 min(listen_backlog, /proc/sys/net/core/somaxconn),
      当命令输出中这两个参数相等时，表示当前accept队列满，考虑调大somaxconn数值;
      如果是已经建立好的链接，Recv-Q表示内核已经收到但是应用还没有读取的数据量，
-     Send-Q表示还在SendBuf中，没有ack的数据量)
+     Send-Q表示还在SendBuf中，没有ack的数据量，单位是字节)
 
 109、当半连接队列满时，新来的连接的处理方式为？
     (tips：丢弃新来的连接请求，客户端的connect会超时)
@@ -516,6 +516,35 @@
 143、网络模块中的连接表是全局的，在recv中，计算四元组hash，然后在连接表中找到sock，
     完成后续的通信过程
 
+144、tcp用到的mem参数有如下几个：
+    (
+     net.core.rmem_default    所有socket的读取buffer默认值
+     net.core.rmem_max        所有socket的读取buffer最大值，可以由setsockopt SO_RECVBUF 修改，单位字节
+     net.core.wmem_default    所有socket的发送buffer默认值
+     net.core.wmem_max        所有socket的发送buffer最大值，可以由setsockopt SO_SNDBUF 修改，单位字节
+     net.ipv4.tcp_mem         tcp socket 能用到的mem量，分 min pressure max，以page为单位
+     net.ipv4.tcp_rmem        单tcp socket 能用到的接收buffer量，分 min pressure max，调用setsockopt修改rmem后，内核的自适应调节功能关闭
+     net.ipv4.tcp_wmem        单tcp socket 能用到的发送buffer量，分 min pressure max，调用setsockopt修改wmem后，内核的自适应调节功能关闭
+     )
+
+145、tcp各个状态简述
+    （
+    FIN_WAIT_1，主动调用close的一方在发送了FIN包之后的状态，当收到对方的ack后，状态流转到FIN_WAIT_2；如果没有收到ack，那么重新发送FIN包
+    FIN_WAIT_2，处于FIN_WAIT_1状态的socket收到FIN的ack后，状态转为FIN_WAI_2，socket在这个状态的超时时间为tcp_fin_timeout，如果系统中有较多的
+        此状态的socket，那么表示对端可能异常，没有正确的调用close
+    time_wait，主动关闭的一方在收到对方发送的FIN后，回复ACK，状态转为time_wait，在2 msl 时间后，socket 关闭
+    close_wait，被动关闭的一方收到对端的FIN包后，状态转为close_wait，注意，这个状态没有超时时间，需要后端配合来释放socket链接
+    last_ack，被动关闭的一方发送FIN后，状态转为last_ack，如果没有收到对方的ack，需要重传，如果收到ack，那么socket状态为closed
+    ）
+
+146、什么是orphan sockets
+    (tips：orphan socket可以理解为没有和fd关联的socket，对应TCP中socket的状态为 FIN_WAIT_1，LAST_ACK，TCP_CLOSING，
+     其中TCP_CLOSING用于表示同时关闭的场景，即在FIN_WAIT_1状态下同时受到FIN包
+     CLOSE_WAIT 不计入 orphan socket
+     TIME_WAIT 不计入 orphan socket
+     FIN_WAIT_2 根据  fin_timeout 不同时长，有可能计入
+     如果系统上orphan socket 过多，那么需要统计处于哪个状态的socket较多，再结合[145]来分析)
+
 // http
 1、什么是CNAME？
 
@@ -556,6 +585,12 @@
 
 15、标准http header中的字段都是大小写不敏感的，浏览器已经对这个进行了处理，
     在做服务端开发，或者客户端解析时需要注意
+
+16、http协议中的Connection header定义了当前Trans完成后，服务端怎么处理当前这个连接。
+    默认为 close，即常见的短链接
+    如果为 Keep-Alive，那么链接将会维持
+    http Header中同样有Keep-Alive字段，可以定义timeout 和 max 字段来控制当前链接的超时时间
+    和发送的request数量
 
 // 其他相关
 1、iptables实现原理，使用了哪些算法？
