@@ -545,6 +545,9 @@
      FIN_WAIT_2 根据  fin_timeout 不同时长，有可能计入
      如果系统上orphan socket 过多，那么需要统计处于哪个状态的socket较多，再结合[145]来分析)
 
+147、TCP的SYN报文可以携带数据吗？
+    (tips：虽然在发送SYN阶段，双方的序列号还没有协商好，但是实现中可以携带数据)
+
 // http
 1、什么是CNAME？
 
