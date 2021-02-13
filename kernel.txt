@@ -15,6 +15,7 @@
 6、pthread_mutex 默认情况下 对同一个锁 重复加锁两次 会有什么效果，为什么？
 
 7、pthread_mutex 怎么实现？ 使用了哪个系统调用？
+    (tips：futex)
 
 8、可以在线程中调用fork吗？为什么？
 
@@ -70,6 +71,10 @@
     tips：PTRACE_TRACEME & SIGTRAP handler & /proc/self/status
  
 30、简单解释下 vsyscall & vdso ？
+    (tips：vsyscall是为了解决常用的time,gettimeofday等函数频繁调用时上下文切换过多的问题，
+     它提供了一种映射机制，将内核中的时间数据映射到用户态中。
+     vdso则更进一步，将这种映射封装为动态链接库，可以利用ADSR机制来对数据进行保护，
+     在/proc/$pid/smap中，可以通过dd来将vdso导出得到一个elf格式的库文件)
 
 31、/proc/kcore文件有什么用？
 
@@ -274,10 +279,17 @@
      active process 和 处于 uninterruptable状态的进程，
      load = old * e + (1-e)*processes，即也会参考前一次的load数据
      所以说，如果通过命令看到系统负载高，不一定是CPU繁忙，也有可能是
-     系统I/O繁忙，更多的进程在等待着从磁盘等设备读取数据)
+     系统I/O繁忙，更多的进程在等待着从磁盘等设备读取数据,
+     系统的负载有两种，一种是CPU，一种是IO，uninterruptable状态的进程就是反馈系统
+     的IO情况)
 
 93、操作系统中并没有为cgroup添加专用的system call，而是通过 cgroup fs来完成
     进程的资源隔离操作
+
+94、内核会为每个cpu启动一个优先级很高的实时内核线程watchdog/x,尝试每5s调度一次,更新时间戳,
+   如果对应线程长时间没有被调度执行,则打印soft lockup告警
+
+95、同样内核会为每个CPU启动一个高精度的timer来检测中断的执行是否被长时间阻塞,这个timer默认每4s触发一次来更新时间戳
 
 // 内存管理 mm
 
@@ -747,6 +759,20 @@
     *   bit 2 ==     0: kernel-mode access  1: user-mode access
     *   bit 3 ==               1: use of reserved bit detected
     *   bit 4 ==              1: fault was an instruction fetch
+
+129、通常在不可睡眠，或不可调度的上下文中使用GFP_ATOMIC标志调用kmalloc申请内存
+    如果当前zone的内存水位低于min，那么GFP_ATOMIC可以使用到 min/4的量。对应的，如果使用GFP_KERNEL标志，
+    则可能会触发direct reclaim
+    PF_MEMALLOC则是kswapd在回收内存空间时申请空间，所以带这个标志的内存申请必须得到满足
+    可以使用对应的预留空间。
+
+130、某个问题中，程序在异常时有一段退出逻辑，但是刚好磁盘hang，导致对应代码段没有load上来
+    程序没有按照预定的逻辑退出，出现问题。
+    这个问题有如下几个启示
+    （1）怎么确认代码里面的某个函数，或某几个函数在磁盘文件的哪个block
+    （2）内核从磁盘读取文件异常时，通常会打印带sector的日志，那么怎么和第一点的信息对应上来，
+        即通过sector找到对应block，在匹配到操作的文件
+    （3）怎么解决代码段不能load的问题(可以通过mlock来避免对应页面被换出)
 
 // 其他
 
