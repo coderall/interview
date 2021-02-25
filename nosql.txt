@@ -30,6 +30,17 @@
     (2)本地缓存，减少访问redis量
     (3)热点key添加其他信息，如timestamp，这样人为区分开访问节点
 
+4、Redis基于LRU实现了一套VM管理机制，原因有如下几个点
+    (tips：
+     1、Redis管理的数据结构比较复杂，不适合直接用操作系统的page管理
+     2、操作系统的page是4KB大小固定的，但是像Redis中的list结构，有可能包含了很多的node，
+        需要由Redis自己来将整个结构进行写回
+     3、Redis如果依赖操作系统的page，由于本身实现是单线程的，前一个请求访问到了在磁盘中的key，
+        那么会阻塞后续的所有client访问
+    为了绕过page cache，很多数据库的实现都是自己管理VM，自己实现flush，然后以 O_DIRECT 的模式
+    将数据写回，避免数据的二次拷贝
+    )
+
 
 
 // Memcached
