@@ -217,7 +217,9 @@
 	
 87、Ext4 extents的作用是？
 	(tips：将同一文件的数据临近存放，减少之前间接块索引导致的多次读取元数据，
-	同时增加预读效果，加快truncate操作)
+	同时增加预读效果，加快truncate操作
+    单个extent最多包括32768个block，即128M的空间，如果当前文件系统开启了extent属性，
+    那么在写入时就会按照extent的规则来写，同时 ioctl也支持从块指针的方式转为extent)
 	
 88、Ext4 multiblock allocation概念？
 	(tips：之前的ext文件系统分配文件block时是一次分配一个block，性能较低)
@@ -329,6 +331,7 @@
 	而不是磁盘上，这样解决了Ext2上的预分配导致的Crash恢复时数据的不一致问题
 	
 124、Ext4 Extent 树高最高为 5
+    (tips：实际上不大于2)
 
 125、fsync在保证当前文件本身的数据落盘的同时，对于包含这个文件的文件夹的更新则没有保证
 
@@ -747,6 +750,15 @@
 // block layer
 1、io_submit调用理论上是非阻塞的，但是如果执行sync写入，或者有meta data I/O，或者，设备中能提供的
     request数量有限，如果超过这个限制，也只能阻塞进入等待。
+
+2、怎么确保文件系统下发的写入操作返回时，数据真正落盘呢？
+    (tips：使用SCSI中的FUA命令，可以将磁盘的缓存模式调整为write through，这样当磁盘驱动器向操作系统返回写入成功信号时，
+     数据就真正落盘了)
+
+3、Linux系统中，文件系统下发的bio可以带 REQ_PREFLUSH 和 REQ_FUA两个flag，前者保证在处理bio之前将磁盘cache写回，
+    后者的作用如2所述。block layer不用关注这两个flag的底层实现逻辑，磁盘驱动需要实现这两个功能，
+    如果磁盘没有non-volatile buffer，REQ_PREFLUSH不作任何操作。
+    如果物理磁盘不支持FUA，那么可以将FUA操作模拟为一个写入+FLUSH
 
 // trace
 1、通过iostat看到某个磁盘util高，怎么确认是哪个进程在进行I/O？
