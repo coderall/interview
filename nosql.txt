@@ -41,6 +41,12 @@
     将数据写回，避免数据的二次拷贝
     )
 
+// LevelDB
+1、BloomFilter有什么缺点？
+    (tips：
+     1、如果判断一个key不在，那就真的不在，但是如果判断在，那有可能不在
+     2、BloomFilter结构不支持delete操作，不过这个在LevelDB中还好，因为levelDB在SSTable中
+     使用BloomFilter，且SSTable结构是不变的，避开了这一问题，有其他结构提出了改进的操作)
 
 
 // Memcached
