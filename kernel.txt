@@ -327,7 +327,8 @@
      位置靠后的CPU访存延迟增高)
 
 13、使用哪个命令来查看NUMA信息？
-    (tips：numactl命令)
+    (tips：numactl命令
+     numactl --hardware or numactl --show)
 
 14、/proc/interrupts 文件内容解释？
 
@@ -665,7 +666,10 @@
     (tips：因为如果应用没有针对NUMA进行优化，那么有可能父进程在Node0运行，
      启动时预分配了运行时需要的的总内存，如果后续spawn的子进程迁移到Node1，这时，
      访问原来的内存就需要经过QPI总线，走point-to-point link，导致数据访问延时增加，
-     QPI总线的数据传输速度低于CPU访问内存的)
+     QPI总线的数据传输速度低于CPU访问内存的
+     所以在使用NUMA时，对进程绑核是必须操作，减少跨node访存；当某一个numa node内存紧张时
+     早期的实现会回收本node的page cache，造成上层应用延迟升高；当时2014年之后的内核代码已经修复
+     了这个问题，修改为尝试申请其他node的内存)
 
 111、OOM计算的是物理内存的使用，malloc返回非NULL，只是表示分配了虚拟内存，
     后续访问时，有可能触发缺页中断，进而引发OOM，一个可取的方法就是malloc之后，
@@ -780,6 +784,12 @@
     （2）内核从磁盘读取文件异常时，通常会打印带sector的日志，那么怎么和第一点的信息对应上来，
         即通过sector找到对应block，在匹配到操作的文件
     （3）怎么解决代码段不能load的问题(可以通过mlock来避免对应页面被换出)
+
+131 NUMA中node是一种物理划分,表示哪些CPU core是一组,可以用numactl --hardware 看到对应的local内存的大小
+    而CPU Sockets表示的是插槽的数量,所以,CPU Sockets和NUMA node数量没有关系,两者可能相等,也可能不相等
+
+132 sched_setaffinity在设置时, dest_cpu = cpumask_first_and(cpu_active_mask, new_mask),并尝试将对应的
+    thread迁移到目标cpu的runqueue中.
 
 // 其他
 
