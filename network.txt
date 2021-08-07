@@ -137,8 +137,17 @@
 	(tips：TCP_NODELAY用来关闭nagle算法)
 
 35、SO_REUSEADDR 标志有什么作用？
+    (tips：作用有如下几个
+     1、默认情况下，如果有两个socket，socketA=ipA:portA，socketB=ipB:portB，
+     只要ipA 和 ipB不冲突，就可以bind成功，
+     如果有一个socket绑定了 0.0.0.0:21，如果不打开SO_REUSEADDR，那么其他socket
+     就不能再bind 192.168.0.1:21，同样绑定其他端口也不行，因为地址冲突了。
+     总结而言就是 SO_REUSEADDR可以让0.0.0.0地址和其他地址共同使用)
+    2、还有一点就是当socket处于 TIME_WAIT状态时，如果不指定SO_REUSEADDR，那么
+    后续如果有socket想绑定相同的addr:port，就会失败，这里不考虑SO_REUSEPORT)
 
 36、SO_REUSEPORT 标志有什么作用？
+    (tips：SO_REUSEPORT则条件更为宽松，ip+port都相等也可以，由内核来分配对应的链接sock)
 
 37、SO_REUSEADDR 和 SO_REUSEPORT有什么区别？使用中分别要注意什么？
 
@@ -270,7 +279,8 @@
 	
 89、TCP_DEFER_ACCEPT 标志有什么作用？
     (tips：设置了这个option的listen socket 只有在连接上真正收到了数据时，listener才会被唤醒，
-     这样会减少listener的wake up次数，提高效率)
+     这样会减少listener的wake up次数，提高效率
+     客户端socket同样可以设置这个标志，这样会减少一次客户端向服务器发送的ack)
 
 90、sysctl -a | grep "tcp" | grep "re" 中各种重试次数与时间的设置都有哪些作用？
 
@@ -372,8 +382,10 @@
      服务端发送SYN包，服务端回复ACK里面带有seq数据，这样就可以拿到正确的seqid，然后手动构造RST包给服务端)
 
 113、TCP头中的PSH 标志什么意思？
-    (tips：当接收端收到带有PSH标志的包时，不会继续等待数据，而是直接唤醒上层的socket接收数据，
-     所以，PSH一般用在 发送端 已经发送完数据，在最后一个包上带上PSH标志
+    (tips：
+     接收端收到带有PSH标志的包时，不会继续等待数据，而是直接唤醒上层的socket接收数据
+     发送端看到有PSH标志的包时，不会继续等待后续数据，而是立即将对应数据包发送出去，
+     PSH一般用在 发送端 已经发送完数据，在最后一个包上带上PSH标志
      应用层无法控制TCP头中的PSH)
 
 114、TCP头中的URG 标志什么意思？
