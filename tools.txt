@@ -8,3 +8,13 @@ this doc record some useful tools to trace problem or optimize performance
 
 #No.3 bloom filter caculator
 网上有计算 bloom filter 占用空间的公式
+
+#No.4 OpenSSL 开源tls库
+检查证书中的域名:
+openssl x509 -in certificate.crt -text -noout
+
+生成自签名证书:
+openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
+
+#No.5 rpm 解包
+rpm2cpio ./xxx.x86_64.rpm | cpio -idmv
