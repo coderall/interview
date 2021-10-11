@@ -45,3 +45,16 @@
 
 13、gcc -M test.c 选项可以看到编译时所有include的头文件
     gcc -MM选项是过滤了系统头文件之后的输出
+
+14、在用GDB跟踪某些binary时，step比较慢，可以在GDB的命令行中 set env LD_BIND_NOW=true来解决
+
+15、在用GDB attach 进程时，可以使用 info sharedlibrary 命令来查看当前加载动态链接库的情况，
+    同时也可以使用sharedlibrary 命令来手动加载某些库
+
+16、GDB调试C++程序时，如果定位到this指针的位置，那么可以使用 x /10a 命令来查看虚表的内容
+    方便定位问题
+
+17、gcc可以编译.cpp文件，但是会遇到 undefined reference 的报错，这是因为没有链接C++的
+    stdc++ 库，只要在编译cpp文件时，加上 -lstdc++ 选项，则编译可以正常进行。
+    同时，编译分为如下几步
+    cc1 / cc1plus (编译) --> as (汇编) --> collect2 () --> ld (链接)
