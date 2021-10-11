@@ -785,11 +785,16 @@
         即通过sector找到对应block，在匹配到操作的文件
     （3）怎么解决代码段不能load的问题(可以通过mlock来避免对应页面被换出)
 
-131 NUMA中node是一种物理划分,表示哪些CPU core是一组,可以用numactl --hardware 看到对应的local内存的大小
+131、NUMA中node是一种物理划分,表示哪些CPU core是一组,可以用numactl --hardware 看到对应的local内存的大小
     而CPU Sockets表示的是插槽的数量,所以,CPU Sockets和NUMA node数量没有关系,两者可能相等,也可能不相等
 
-132 sched_setaffinity在设置时, dest_cpu = cpumask_first_and(cpu_active_mask, new_mask),并尝试将对应的
+132、sched_setaffinity在设置时, dest_cpu = cpumask_first_and(cpu_active_mask, new_mask),并尝试将对应的
     thread迁移到目标cpu的runqueue中.
+
+132、在使用mmap加载磁盘文件时，如果出现越界访问(例如：超过文件长度的访问)，或者访问时，其他程序对文件内容
+    进行了截断，那么会报SIGBUS的错误。
+    同时，如果对READ_ONLY的区域，进行写入，则会产生SIGSEGV错误；这与常见的段错误不同；应用层程序尝试写
+    内核区域的内存时，也会产生SIGSEGV
 
 // 其他
 
