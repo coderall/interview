@@ -636,6 +636,7 @@
 10、netfilter都有哪些hook点？
 
 11、tcpdump工作原理？
+    (tips：调用socket(AF_PACKET, SOCK_RAW, ETH_P_ALL) 创建一个RAW Socket来接收所有的包)
 
 12、什么是bonding技术？常用的工作模式有哪些？
     (bond0 的配置选项可以参考 /etc/sysconfig/network-script/ifcfg-bond0 文件，
