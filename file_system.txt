@@ -747,6 +747,19 @@
     （之前还想着写个程序，每次以direct模式追加写入1字节，这样就可以快速的占满磁盘，但是有了上述的限制，
     就没法实现了）
 
+211、/etc/fstab 文件中记录了在机器启动时需要挂载的磁盘信息；
+     /etc/mtab 文件中记录了当前机器上已经挂载的磁盘信息
+
+212、遇到 Disk quota exceed 报错时，先 df -hi 查看对应磁盘的inode使用情况；
+    如果没有超；那么查看/etc/mtab文件查看对应挂载点的挂载属性中是否有 usrquota/grpquota，
+    如果有，那么可以使用 edquota -u $USER 或 edquota -u $GROUP 来查看当前为用户/组设置的quota
+    设置quota可以使用 setquota 命令。
+    edquota命令查看不到社会的quota时，可以使用 repquota -g or  repquota -u mount_point来确认
+    对应目录是否有设置quota
+
+213、getfattr -d -m '-' /some/file 命令可以获取文件的所有扩展属性，EXT系列文件支持这一属性。
+    大小限制可以 man 5 attr 查看
+
 // block layer
 1、io_submit调用理论上是非阻塞的，但是如果执行sync写入，或者有meta data I/O，或者，设备中能提供的
     request数量有限，如果超过这个限制，也只能阻塞进入等待。

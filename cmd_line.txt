@@ -23,3 +23,11 @@
 8、last reboot可以查看机器的重启信息
     (tips：last命令读取的/var/log/wtmp文件，可以查看对应用户的登录信息，例如：
      last -n 10 user_name)
+
+9、groups命令可以查看当前登录的用户对应的用户组
+
+10、python -m py_compile your_python_script.py可以完成python脚本的语法检测
+
+11、命令前加 \ 可以跳过alias，运行original command
+
+12、pkill -9 -P 1，pkill -P参数可以根据父进程id来向目标进程发信号

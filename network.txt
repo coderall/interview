@@ -1,6 +1,20 @@
 --- some popular network interview questions,mostly about TCP/IP ---
 --- TCP/IP 常见网络面试 笔试题 ---
 
+// MAC
+1、MAC 层的frame format中有一个CRC32字段，网卡会对源、目的地址、length和DATA计算CRC
+    但是，IP/TCP/UDP header中的CRC只计算header本身的数据
+
+2、netstat -s 的输出中有 InCsumErrors，这个计数来自于两个文件 /proc/net/netstat /proc/net/snmp,
+    内核代码中对于 InCsumErrors 有 ip，tcp，udp的统计
+    "InCsumErrors", IPSTATS_MIB_CSUMERRORS
+    "InCsumErrors", TCP_MIB_CSUMERRORS
+    "InCsumErrors", UDP_MIB_CSUMERRORS
+
+3、链路层的crc error可以cat /sys/class/net/eth0/statistics/rx_crc_errors 拿到
+    数据来自于  struct rtnl_link_stats64 
+    日常可以使用 ip -s -s link show dev eth0 命令来快速查看
+
 // IP
 
 1、路由器可以隔离广播域吗？ 交换机可以隔离广播域吗？
@@ -8,7 +22,7 @@
 	
 2、什么是VLAN？
 	(tips：虚拟局域网)
-	
+
 3、什么是VxLAN？
 	(tips：扩展版的VLAN，具体作用后面再补充)
 
@@ -517,7 +531,7 @@
 141、tcp incast是指多对一的数据流向拓扑，即多个源向一个目的写入数据，会导致目的端交换机buffer满，
     出现丢包，反馈到源端就是出现数据重传。
     解决方案一般是升级到更高buffer容量的交换机，另一方面尝试源和目的就近部署，
-    减少网络跳数
+    减少网络跳数，还需要考虑数据打散
 
 142、socket的REUSEPORT属性在服务端构造了一个多队列多服务模型，与之对应的是早期的fork版本构建了一个
     单队列多服务模型。
@@ -606,6 +620,9 @@
     如果为 Keep-Alive，那么链接将会维持
     http Header中同样有Keep-Alive字段，可以定义timeout 和 max 字段来控制当前链接的超时时间
     和发送的request数量
+
+17、系统本地默认没有DNS cache缓存，即每次使用域名进行访问时，都要进行域名解析；但是libcurl库的
+    实现中有DNS cache，每个handler中默认保存60s
 
 // 其他相关
 1、iptables实现原理，使用了哪些算法？

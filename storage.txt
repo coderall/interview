@@ -13,3 +13,34 @@
 
 3、当前的深度归档实现的思想在20年前就有了，即MAID(Massive Arrays of idle disk)，实现的难点在于
     调度
+
+4、怎么应对磁盘盘符漂移
+    (tips：使用e2label程序为某个盘写入label，然后在挂载时，按照label挂载；如果要
+     自动挂载，则将这些信息写入/etc/fstab文件中；
+     另，同样可以使用by UUID的方式来)
+
+5、ext2 ext3 ext4的super block中有字段 s_volume_name 用来保存设置的label，最长16个字节
+
+6、当前的FaultTolerant部署模式为啥不采用Active-Active的模式？
+
+7、SSD的Read Disturb问题
+    (tips：SSD由于其自身电器属性，在读取一个paeg时，会影响其他page上的数据，有可能造成bit 翻转等错误
+     解决方法是从硬件层面引入类似RAID方法来在错误出现时纠错
+     另一方变是引入统计信息，统计某一个page或者block的读次数，到达上限后，进行回收)
+
+8、https://ma.ttias.be/change-reserved-blocks-ext3-ext4-filesystem-linux 根据这里的描述，对于
+    当前越来越大的磁盘来讲，5%的预留空间太大了，可以考虑调小
+    可以继续看下动态调整的影响面
+
+9、机械硬盘的磁头旋转角速度固定，单位时间内，可以读取的外道长度较长，读取速度更快；
+    早期生产商将外道的磁密度降低来平衡这种差异。
+    但是上述做法的一个缺陷是浪费了磁盘track空间(外圈的sector数量和内圈保持一致)。
+    ZBR（Zone Bit Recording）将单位角度内，具有相同数量sector的track组成一个zone，这样外圈的磁密度和内圈保持一致，
+    这样做的效果就是数据存储在外圈访问速度高。
+
+10、磁盘中可能有多个碟片，但是有一个碟片的一个面是不能保存数据的，生产商用这一面来存储一些硬件信息。
+    例如有两个碟片的磁盘，那么可以用作数据存储只有三个面。
+
+11、从2010年起，IDEMA组织完成了 Advanced Format标准的制定，磁盘的physical sector size值扩大到4096 bytes，即4K
+    用 hdparm -I /dev/sda 也能查看这一信息
+    使用了上述标准的磁盘，数据读写的最小单位为4K，即小于4K的，写入时，需要考虑Read-Modify-Write带来的放大

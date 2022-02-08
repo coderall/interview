@@ -294,6 +294,12 @@
 96、kill -0 $pid 可以用来检测给定的进程是否存在(不发送任何实际的signal)，对于一些有pid文件的服务来讲，
     可以通过判断 kill -0 `cat /var/xxx.pid`  命令的返回值来确认对应的进程是否存在
 
+97、lazy FPU context switch
+    (tips:Intel CPU 支持lazy FPU context switch的特性，在没有使用FPU的进程进行切换时，
+     不用保存涉及浮点数运算的寄存器
+     当进程确实用到了浮点数运算时，会触发一个异常，然后下一次的context switch会保存浮点数寄存器
+     不过这个功能好像有安全风险)
+
 // 内存管理 mm
 
 1、malloc的实现
