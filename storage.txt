@@ -44,3 +44,21 @@
 11、从2010年起，IDEMA组织完成了 Advanced Format标准的制定，磁盘的physical sector size值扩大到4096 bytes，即4K
     用 hdparm -I /dev/sda 也能查看这一信息
     使用了上述标准的磁盘，数据读写的最小单位为4K，即小于4K的，写入时，需要考虑Read-Modify-Write带来的放大
+    fdisk -l /dev/sda 可以看到一个logical/phsical sector size 的输出，这些内容实际上也是读取的磁盘上的数据
+    在scsi驱动代码中可以看到 blk_queue_logical_block_size -> read_capacity_16 进而发送SAI_READ_CAPACITY_16的
+    scsi命令给磁盘，获取 logical_block_size 和 physical_block_size，这两个值怎么理解呢，logical表示磁盘当前可以
+    寻址的最小单位，而physical则表示真实的可以操作数据的最小单位，其他导出的信息还有minimum_io_size
+
+12、hdparm -I  /dev/sda 的输出中 IORDY 表示一种硬件层面的流控策略，如果不使用，那么在 fast PIO模式下，可能会有
+    数据损坏。
+
+13、可以通过命令 dd if=/dev/sda of=/root/mymbr bs=512 count=1 <Enter> 来获取磁盘中第一个sector的数据，
+    里面保存有MBR信息，使用 file /root/mymbr 命令可以查看
+
+14、MBR 格式的partition table占用64字节，每个partition table entry 占用16字节，所以一个磁盘只能划分出4个parimary partition
+    如果要划分多余4个分区，则需要将一个parimary partition格式化为extended partition，然后在这个扩展分区中再划分出
+    多个逻辑分区，且只有逻辑分区可以读写文件
+
+15、因为MBR格式中，partition table entry中记录sector数量的是一个4bytes整数，即32bits，那么一个partition最大
+    512 * 2^32 = 512GB，如果有4个partition，那么磁盘最大容量为2TB。
+    所以在当前大容量磁盘广泛使用的今天，MBR格式不再使用，取而代之的是GPT(GUID Partition table)
