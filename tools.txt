@@ -18,3 +18,15 @@ openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.k
 
 #No.5 rpm 解包
 rpm2cpio ./xxx.x86_64.rpm | cpio -idmv
+
+#No.6 tcpdump
+抓特定来源的HTTP包 tcpdump -A -s 0 'src example.com and tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
+抓所有HTTP包 tcpdump -A -s 0 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
+
+#No.7 ssh
+<1>如果使用ssh登录服务器出现长时间的delay，可以查看/etc/ssh/sshd_config文件中UseDNS是否打开
+如果打开，可以考虑关闭
+
+#No.8 
+在安装了python的机器上，可以使用如下命令行来检查某个json文件格式
+python -m json.tool your_json_file

@@ -300,6 +300,12 @@
      当进程确实用到了浮点数运算时，会触发一个异常，然后下一次的context switch会保存浮点数寄存器
      不过这个功能好像有安全风险)
 
+98、应用层使用spinlock需要注意什么？
+    (tips：应用层的spinlock在lock时，不关中断，这是与内核实现最大的不同；而这也导致用户态的
+     程序在拿到lock后，可能因为外部中断的原因而delay，这时另一个cpu上的程序就陷入了空转，浪费CPU资源，
+     解决办法就是拿锁失败后sleep，而sleep又会有上下文切换的开销，与spinlock的高效不符，当前系统mutex基于
+     CAS已实现的足够高效)
+
 // 内存管理 mm
 
 1、malloc的实现
@@ -664,8 +670,11 @@
 108、cgroup可以对用户态map的页面进行管理，也可以针对内核使用的内存进行管理，
     常见的为tcp，当应用触发limit时，cgroup启动reclaim，如果失败，
     则启动OOM(OOM可以配置为不启动，那么进程会hang或者sleep)；memory.limit_in_bytes为
-    hard limit，对应的有soft limit，超过后cgroup会尽力去回收空间。memsw表示
-    memory+swap的空间使用量，在内存空间紧张时，用户态的匿名映射页会swap out。
+    hard limit；memory.soft_limit_in_bytes在系统整体内存不紧张时不生效，
+    但当系统整体内存紧张后，soft_limit_in_bytes会生效，超额的内存申请会失败sleep。
+    memsw表示memory+swap的空间使用量，在内存空间紧张时，用户态的匿名映射页会swap out。
+    在调大memory.limit_in_bytes 之前，需要先把memory.memorysw.limit_in_bytes调大
+    且需要逐级调整，保证整个parent->child链路上的限制都符合预期。
 
 109、内核使用的页面不会swap out到二级存储
     (tips：这里还需要明确下具体是哪些页面，例如tcp使用的skb？shm使用的？等，

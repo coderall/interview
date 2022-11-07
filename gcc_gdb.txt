@@ -67,3 +67,5 @@
 19、使用 LD_DEBUG 环境变量可以查看可执行文件的链接库/符号查找细节。常用命令如下：
     LD_DEBUG=symbols,files $COMMAND
     LD_DEBUG环境变量本身支持的取值可以通过 LD_DEBUG=help cat 查看。
+
+20、可以通过 cat /proc/${pid}/maps | grep so 的方式来查看进程运行时都加载了哪些so
