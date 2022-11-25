@@ -814,6 +814,20 @@
     同时，如果对READ_ONLY的区域，进行写入，则会产生SIGSEGV错误；这与常见的段错误不同；应用层程序尝试写
     内核区域的内存时，也会产生SIGSEGV
 
+133、RSS 和 PSS 和 USS
+    (RSS可以直观的理解为物理内存使用量，PSS在大多数场景和RSS的含义一样，但是在共享库场景，这两个
+     数值不一样，例如一个共享库20K，被20个进程共享，那么PSS的显示就是 1K
+     USS Unique Set Size则表示进程独享的内存大小)
+
+134、通过/proc/${pid}/cgroup 可以查看对应进程归属的cgroup组，在对应的cgroup目录下可以查看memory.stat文件
+    确认各项数据分别使用了多少；cgroup限制的内存包括了两部分，RSS和Cache；
+    而操作系统的Cache包括了（page cache 、dev buffers、slab，具体数值可以通过/proc/meminfo查看）;
+    但是需要注意cgroup统计时并不统计slab的使用量
+
+135、cgroup内部的回收逻辑在4.19内核之前都是直接回收；但是高版本内核使用了异步回收功能
+    如果回收后，仍然不能满足要求，那么就会触发OOM逻辑
+    (在对应进程的memory cgroup目录下查看是否有 wmark* 文件来确认是否支持异步回收功能)
+
 // 其他
 
 1、内核和用户空间通信都有哪些方法？
@@ -864,9 +878,19 @@
 	(tips：使用type命令查看)
 	
 5、怎样让系统生成core 文件？
-	(tips：ulimit -c unlimited)
+	(tips：ulimit -c unlimited，同时还要关注/proc/sys/kernel/core_pattern是否为空)
 	
 6、怎样定制core文件命名规则？
 	(tips：/proc/sys/kernel/core_pattern)
 
 7、Ubuntu系统不再使用/var/log/messages来记录系统事件，现在使用/var/log/syslog来替代
+
+8、在core文件中一般不会记录memory-mapped I/O pages，有时coredump file size会比VIRT值还大
+    ，有可能是内存中的数据swap到了磁盘
+
+9、core file在生成时，具体dump哪些内容受到 /proc/${pid}/coredump_filter 影响，
+    这个文件的内容是 16 进制的，具体每一bit的涵义参考man 5 core
+
+10、/proc/${pid}/task/${thread_id}/stack 可以看到一个进程下的各个线程的内核栈
+
+11、/proc/${pid}/smaps 可以看到进程使用的内存区域的详细信息，排查问题时有用

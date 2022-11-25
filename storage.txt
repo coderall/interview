@@ -79,3 +79,20 @@
     这样在相同磁盘尺寸的情况下，可以存储更多的数据
 
 19、在数据中心成本计算中，设备(包括存储设置)占用的机架空间也需要考虑
+
+20、在文章《Flash Reliability in Production: The Expected and the Unexpected》中，作者提出了如下几个观点
+    （1）SLC的可靠性并不比MLC高
+    （2）RBER比UBER能更好的预测错误
+    （3）RBER和UE(uncorrectable errors)的数量会随着PE的增长而增长
+    RBER(Raw Bit Error Rate)
+    UBER(Uncorrectable Bit Error Rate)
+
+21、影响SSD可靠性的因素有如下几个
+    （1）耐久性，随着SSD PE(program/erase)次数的增加，整个盘的持久性会降低
+    （2）Data Retention，即数据保持能力，如果发生电荷泄漏，那么就会导致Read Error
+    （3）Data disturb，目标cell读取多次后，再次读取时，需要对临近的cell同步施加一个电压，
+        但这会造成电荷泄漏，导致Read Fail
+
+22、在使用 smartctl 查询不到对应nvme设备的 smart-log 后，可以尝试使用 sudo nvme smart-log /dev/nvme 查看
+
+23、当前3D TLC是企业级固态存储的主要介质选择
