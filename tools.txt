@@ -16,8 +16,18 @@ openssl x509 -in certificate.crt -text -noout
 生成自签名证书:
 openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 -keyout privateKey.key -out certificate.crt
 
+校验私钥文件正确性
+openssl rsa -check -noout -in key.private 
+
+校验证书文件中的公钥和私钥是否匹配（适用于自签场景）
+ssh-keygen -f oss_test.pem -y > key.pub 注意可能需要输入passphrase
+openssl x509 -modulus -noout -in key.pub 注意输出
+openssl rsa -modulus -noout -in key.private 查看私钥的module（要和上一条命令输出一致）
+
 #No.5 rpm 解包
 rpm2cpio ./xxx.x86_64.rpm | cpio -idmv
+rpm -ql [package_name] | head -n 100 可以查看对应包按照目录
+rpm -e  [package_name] 删除已安装的包
 
 #No.6 tcpdump
 抓特定来源的HTTP包 tcpdump -A -s 0 'src example.com and tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)'
@@ -30,3 +40,10 @@ rpm2cpio ./xxx.x86_64.rpm | cpio -idmv
 #No.8 
 在安装了python的机器上，可以使用如下命令行来检查某个json文件格式
 python -m json.tool your_json_file
+
+#No.9 curl
+curl --local-port 12345 可以指定发出去的数据包的源端口，如果是TCP协议，此时会调用bind来完成地址绑定
+
+
+#No.10 yum
+yum whatprovides */c++config.h -b current 可以查询哪个包提供了对应头文件，便于确定需要安装的包

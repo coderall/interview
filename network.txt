@@ -670,7 +670,11 @@
     参数中 mode=4 表示采用 802.3ad标准来组成聚合链路来发送和接收数据包，这个需要
     上游交换机支持；miimon 参数表示 mii 监控的时间间隔，用来监听底层硬件是否正常；
     xmit_hash_policy表示采用的hash规则，常用的有 layer3+4 表示利用ip层的源&目的地址和
-    TCP层的源&目的端口)
+    TCP层的源&目的端口
+    mode=0 是rr策略，有容灾能力
+    mode=1 是active-backup策略，主备模式，备网卡对外不可见，有容灾能力
+    mode=2 是hash策略，具体由xmit_hash_policy决定
+    mode=3 是广播模式，每一个包都发给所有网卡，有容灾能力)
 
 13、网络设备中 什么叫 “MAN Core”？
 

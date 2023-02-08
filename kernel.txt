@@ -750,7 +750,7 @@
 123、内核会针对每一个page统计MCE(Machine Check Exception)，如果超过阈值，那么会进行
     soft_offline_page，即将出错的页面内容拷贝到其他物理页面，然后将出错的页面下线，
     这一操作对应用透明。
-    MCE的相关配置文件位于 /etc/mcelog.conf
+    MCE的log配置文件位于 /etc/mcelog/mcelog.conf
 
 124、x64程序中，cpu的fs寄存器用于存储stack canary
 
@@ -826,7 +826,13 @@
 
 135、cgroup内部的回收逻辑在4.19内核之前都是直接回收；但是高版本内核使用了异步回收功能
     如果回收后，仍然不能满足要求，那么就会触发OOM逻辑
-    (在对应进程的memory cgroup目录下查看是否有 wmark* 文件来确认是否支持异步回收功能)
+    (在对应进程的memory cgroup目录下查看是否有 wmark* 文件来确认是否支持异步回收功能
+     可以搜搜 memcg异步回收相关文档)
+
+136、在/var/log/mcelog中可以观察到最近的MCE事件
+
+137、'Corrected patrol scrub error' 
+    (tips:Demand scrubbing is the ability to write corrected data back to the memory once a correctable error is detected on a read transaction. Patrol scrubbing proactively searches the system memory, repairing correctable errors. It prevents accumulation of single-bit errors)
 
 // 其他
 
@@ -869,11 +875,6 @@
 // shell
 1、怎么样使alias永久生效？
 
-2、source 命令有什么作用？
-
-3、top 命令中CPU使用率高于100，是什么原因？
-	(tips：机器有多个core，显示的是各个CPU利用率之和)
-	
 4、怎样确定一个shell 命令是builtin的？
 	(tips：使用type命令查看)
 	

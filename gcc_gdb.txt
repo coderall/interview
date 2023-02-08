@@ -69,3 +69,10 @@
     LD_DEBUG环境变量本身支持的取值可以通过 LD_DEBUG=help cat 查看。
 
 20、可以通过 cat /proc/${pid}/maps | grep so 的方式来查看进程运行时都加载了哪些so
+
+21、可以通过如下命令获取进程中各个线程栈
+     gdb <binary> -c <coredump> -ex "thread apply all bt" -ex "quit" > output.log
+    如果运行的进程是个nostripped版本，也可以尝试使用pstack来抓栈
+
+22、jump *0x1234 可以做到调到地址为 0x1234地址的指令处；
+    这个指令会忽略中间跳过的代码

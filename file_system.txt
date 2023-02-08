@@ -769,11 +769,18 @@
     如果没有超；那么查看/etc/mtab文件查看对应挂载点的挂载属性中是否有 usrquota/grpquota，
     如果有，那么可以使用 edquota -u $USER 或 edquota -u $GROUP 来查看当前为用户/组设置的quota
     设置quota可以使用 setquota 命令。
-    edquota命令查看不到社会的quota时，可以使用 repquota -g or  repquota -u mount_point来确认
+    edquota命令查看不到设置的quota时，可以使用 repquota -g or  repquota -u mount_point来确认
     对应目录是否有设置quota
 
 213、getfattr -d -m '-' /some/file 命令可以获取文件的所有扩展属性，EXT系列文件支持这一属性。
     大小限制可以 man 5 attr 查看
+
+214、什么是 last write win？
+    (tips:last write win是一种在并发写入场景下的数据版本决策策略，服务端以时间序，选择最后一写入的
+     数据来作为最新版本
+     为什么不是客户端看到的顺序，因为在分布式系统下，很难做到客户端和服务端时钟的一致性(例如，客户端网络卡顿)，
+     要做到，可能得启用更重的分布式一致性协议，但这又会导致整体QPS低。
+     以分布式对象存储为例，就选择应用lww 原则)
 
 // block layer
 1、io_submit调用理论上是非阻塞的，但是如果执行sync写入，或者有meta data I/O，或者，设备中能提供的
