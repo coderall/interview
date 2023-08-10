@@ -76,3 +76,9 @@
 
 22、jump *0x1234 可以做到调到地址为 0x1234地址的指令处；
     这个指令会忽略中间跳过的代码
+
+23、在x86架构下进程core 原因为 illegal instruction时，不能忽略，可以gdb disass 看下当前执行到
+    哪条指令报的错，再然后可以去查对应cpu型号是否支持这个指令
+    这两天就遇到一些较老型号的CPU不支持vinsert128 这个指令导致UT core；vinsert128 是avx2指令集中的一个
+    可以 lscpu | grep -i avx2 看对应cpu是否支持
+    谨记，不可大意，还是可以尝试去定位下

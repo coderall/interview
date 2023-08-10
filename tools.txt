@@ -47,3 +47,14 @@ curl --local-port 12345 可以指定发出去的数据包的源端口，如果�
 
 #No.10 yum
 yum whatprovides */c++config.h -b current 可以查询哪个包提供了对应头文件，便于确定需要安装的包
+
+#No.11 make
+make -n   只打印make要执行的命令，但不真正执行
+
+#No.12 configure
+开源软件中的configure脚本依赖 config.guess 和 config.sub；这两个文件需要及时更新，尤其是国产化平台
+需要对应的更新
+
+#No.13 gtest
+gtest测试框架会catch exception，导致core的堆栈和实际调用栈不匹配，可以在UT binary后加 --gtest_catch_exceptions=0
+参数来禁用exception catch来观察实际问题调用栈，方便定位问题

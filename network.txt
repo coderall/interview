@@ -634,6 +634,9 @@
 17、系统本地默认没有DNS cache缓存，即每次使用域名进行访问时，都要进行域名解析；但是libcurl库的
     实现中有DNS cache，每个handler中默认保存60s
 
+18、https SNI （Server Name Indacation）机制在TLS客户端握手信息中填入domain，这样在多站点主机中，
+    服务端可以正确的下发预期的证书
+
 // 其他相关
 1、iptables实现原理，使用了哪些算法？
 
